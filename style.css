@@ -7,13 +7,6 @@
   padding: 0;
 }
 
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #1a1a1a;
@@ -168,9 +161,6 @@ body.is-home {
   justify-content: center;
   font-size: 36px;
   overflow: hidden;
-  /* Pour une vraie image :
-     background: url('assets/images/personne1.jpg') center/cover;
-     background-size: cover; */
 }
 
 .person-name {
@@ -261,10 +251,6 @@ body.is-home {
   font-size: 32px;
   border: 1px solid #ebebeb;
   overflow: hidden;
-  /* Pour une vraie image :
-     background: url('assets/images/son.jpg') center/cover;
-     background-size: cover;
-     font-size: 0; */
 }
 
 .sound-name {
