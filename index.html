@@ -97,19 +97,17 @@
     // ================================================
     const personsGrid = document.getElementById('persons-grid');
 
-    persons.forEach(person => {
-      const card = document.createElement('div');
-      card.className = 'person-card';
+   persons.forEach(person => {
+  const card = document.createElement('div');
+  card.className = 'person-card';
 
-      card.innerHTML = `
-        <img src="assets/Character${person.id}.png" class="person-img" />
-        <div class="person-name">${person.name}</div>
-        <div class="person-count">${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}</div>
-      `;
+  card.innerHTML = `
+    <img src="assets/Character${person.id}.png" class="person-img" />
+  `;
 
-      card.addEventListener('click', () => openSoundboard(person));
-      personsGrid.appendChild(card);
-    });
+  card.addEventListener('click', () => openSoundboard(person));
+  personsGrid.appendChild(card);
+});
 
     // ================================================
     // NAVIGATION
