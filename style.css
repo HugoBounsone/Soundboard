@@ -100,7 +100,7 @@ body.is-home {
   }
 
  50% {
-  transform: translateY(-15px) rotate(-10deg);
+  transform: translateY(-10px);
 }
 
   100% {
