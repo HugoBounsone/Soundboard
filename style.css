@@ -16,6 +16,11 @@ body {
 }
 
 body.is-home {
+  background-image: url("assets/BG_SB.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow: hidden;
   height: 100vh;
 }
