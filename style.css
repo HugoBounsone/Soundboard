@@ -83,56 +83,70 @@ body.is-home {
   cursor: pointer;
 }
 
-/* PERSONNAGES */
+/* ========================= */
+/* PERSONNAGES (CLEAN MODE) */
+/* ========================= */
+
 .sb-header {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
 }
 
+/* bouton home image */
 .home-btn {
   width: 48px;
   height: 48px;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: transform 0.15s ease;
 }
 
+.home-btn:active {
+  transform: scale(0.9);
+}
+
+/* grille personnages */
 .persons-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 20px;
+  justify-items: center;
+  align-items: center;
 }
 
+/* carte personnage (ULTRA CLEAN) */
 .person-card {
-  background: white;
-  border: 1px solid #e5e5e5;
-  border-radius: 16px;
-  padding: 1rem;
-  text-align: center;
+  background: transparent;
+  border: none;
+  padding: 0;
   cursor: pointer;
+  transition: transform 0.15s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .person-card:active {
-  transform: scale(0.96);
+  transform: scale(0.92);
 }
 
+/* image personnage */
 .person-img {
   width: 100%;
-  height: 110px;
+  max-width: 160px;
+  height: auto;
   object-fit: contain;
-  margin-bottom: 10px;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
-.person-name {
-  font-weight: 600;
-  font-size: 14px;
-}
+/* ========================= */
+/* SOUNDBOARD (inchangé) */
+/* ========================= */
 
-.person-count {
-  font-size: 12px;
-  color: #777;
-}
-
-/* SOUND */
 .sounds-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
