@@ -12,13 +12,24 @@
 </head>
 <body class="is-home">
 
+  <!-- ========== PAGE ACCUEIL ========== -->
   <div id="page-home" class="page active">
+    <img src="Amp.png" class="deco-amp" alt="" />
+    <img src="enter_button.png" class="enter-btn" id="enter-btn" alt="Enter" />
+  </div>
+
+  <!-- ========== PAGE CHOIX PERSONNAGE ========== -->
+  <div id="page-persons" class="page">
+    <div class="sb-header">
+      <button class="back-btn" onclick="goHome()">← Accueil</button>
+    </div>
     <div class="persons-grid" id="persons-grid"></div>
   </div>
 
+  <!-- ========== PAGE SOUNDBOARD ========== -->
   <div id="page-soundboard" class="page">
     <div class="sb-header">
-      <button class="back-btn" onclick="goHome()">← Accueil</button>
+      <button class="back-btn" onclick="goPersons()">← Retour</button>
       <div class="sb-person-info">
         <div class="sb-avatar" id="sb-avatar"></div>
         <div>
@@ -40,8 +51,8 @@
         name: "Personne 1",
         avatar: "😄",
         sounds: [
-          { name: "Bruit bizarre 1", duration: "1s", image: "🎤", file: "sounds/p1_son1.mp3" },
-          { name: "Son mystère",     duration: "2s", image: "🔊", file: "sounds/p1_son2.mp3" },
+          { name: "Bruit bizarre 1", duration: "1s",   image: "🎤", file: "sounds/p1_son1.mp3" },
+          { name: "Son mystère",     duration: "2s",   image: "🔊", file: "sounds/p1_son2.mp3" },
           { name: "Glou glou",       duration: "0.5s", image: "💧", file: "sounds/p1_son3.mp3" },
           { name: "Pfff...",         duration: "1.5s", image: "💨", file: "sounds/p1_son4.mp3" },
         ]
@@ -80,7 +91,7 @@
     ];
 
     // ================================================
-    //  CONSTRUCTION DE LA PAGE ACCUEIL
+    //  CONSTRUCTION DE LA PAGE PERSONNAGES
     // ================================================
     const personsGrid = document.getElementById('persons-grid');
 
@@ -99,9 +110,17 @@
     // ================================================
     //  NAVIGATION
     // ================================================
-    function openSoundboard(person) {
+    document.getElementById('enter-btn').addEventListener('click', goPersons);
+
+    function goPersons() {
       document.body.classList.remove('is-home');
       document.getElementById('page-home').classList.remove('active');
+      document.getElementById('page-soundboard').classList.remove('active');
+      document.getElementById('page-persons').classList.add('active');
+    }
+
+    function openSoundboard(person) {
+      document.getElementById('page-persons').classList.remove('active');
       document.getElementById('page-soundboard').classList.add('active');
 
       document.getElementById('sb-avatar').textContent = person.avatar;
@@ -128,8 +147,15 @@
     function goHome() {
       stopCurrentSound();
       document.body.classList.add('is-home');
+      document.getElementById('page-persons').classList.remove('active');
       document.getElementById('page-soundboard').classList.remove('active');
       document.getElementById('page-home').classList.add('active');
+    }
+
+    function goPersons_from_sb() {
+      stopCurrentSound();
+      document.getElementById('page-soundboard').classList.remove('active');
+      document.getElementById('page-persons').classList.add('active');
     }
 
     // ================================================
@@ -140,17 +166,11 @@
 
     function playSound(card, file) {
       stopCurrentSound();
-
       const audio = new Audio(file);
       currentAudio = audio;
       currentCard  = card;
-
       card.classList.add('playing');
-
-      audio.play().catch(() => {
-        playPlaceholderBip();
-      });
-
+      audio.play().catch(() => { playPlaceholderBip(); });
       audio.addEventListener('ended', () => {
         card.classList.remove('playing');
         currentAudio = null;
@@ -159,29 +179,20 @@
     }
 
     function stopCurrentSound() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
-      }
-      if (currentCard) {
-        currentCard.classList.remove('playing');
-        currentCard = null;
-      }
+      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+      if (currentCard)  { currentCard.classList.remove('playing'); currentCard = null; }
     }
 
     function playPlaceholderBip() {
       const ctx  = new (window.AudioContext || window.webkitAudioContext)();
       const osc  = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.frequency.value = 300 + Math.random() * 400;
       osc.type = ['sine','square','sawtooth','triangle'][Math.floor(Math.random() * 4)];
       gain.gain.setValueAtTime(0.3, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
     }
   </script>
 </body>
