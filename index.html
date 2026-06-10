@@ -116,12 +116,7 @@
     // ================================================
     document.getElementById('enter-btn').addEventListener('click', goPersons);
 
-    function goPersons() {
-      document.body.classList.remove('is-home');
-      document.getElementById('page-home').classList.remove('active');
-      document.getElementById('page-soundboard').classList.remove('active');
-      document.getElementById('page-persons').classList.add('active');
-    }
+  
 
     function openSoundboard(person) {
       document.getElementById('page-persons').classList.remove('active');
@@ -156,11 +151,16 @@
       document.getElementById('page-home').classList.add('active');
     }
 
-    function goPersons() {
-      stopCurrentSound();
-      document.getElementById('page-soundboard').classList.remove('active');
-      document.getElementById('page-persons').classList.add('active');
-    }
+   function goPersons() {
+  stopCurrentSound();
+
+  document.body.classList.remove('is-home');
+
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-soundboard').classList.remove('active');
+
+  document.getElementById('page-persons').classList.add('active');
+}
 
     // ================================================
     //  LECTURE DES SONS
@@ -252,7 +252,7 @@
     makeDraggable(document.getElementById('deco-amp'));
 makeDraggable(document.getElementById('media-player'));
 
-    document.addEventListener('mouseup', () => { dragging = false; });
+   
   </script>
 </body>
 </html>
