@@ -62,6 +62,7 @@ body.is-home {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
+  margin-top: 2rem; /* Ajoute ceci pour respirer un peu par rapport au haut de l'écran */
 }
 
 .person-card {
