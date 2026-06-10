@@ -202,37 +202,53 @@
     // ================================================
     //  DRAG & DROP AMP.PNG (mobile + desktop)
     // ================================================
-    const amp = document.getElementById('deco-amp');
-    let dragging = false, startX, startY, origX, origY;
+   function makeDraggable(element) {
+  let dragging = false;
+  let startX, startY, origX, origY;
 
-    amp.addEventListener('touchstart', e => {
-      const t = e.touches[0];
-      dragging = true;
-      startX = t.clientX; startY = t.clientY;
-      origX = amp.offsetLeft; origY = amp.offsetTop;
-    }, { passive: true });
+  element.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    dragging = true;
+    startX = t.clientX;
+    startY = t.clientY;
+    origX = element.offsetLeft;
+    origY = element.offsetTop;
+  }, { passive: true });
 
-    amp.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      e.preventDefault();
-      const t = e.touches[0];
-      amp.style.left = (origX + t.clientX - startX) + 'px';
-      amp.style.top  = (origY + t.clientY - startY) + 'px';
-    }, { passive: false });
+  element.addEventListener('touchmove', e => {
+    if (!dragging) return;
 
-    amp.addEventListener('touchend', () => { dragging = false; });
+    e.preventDefault();
 
-    amp.addEventListener('mousedown', e => {
-      dragging = true;
-      startX = e.clientX; startY = e.clientY;
-      origX = amp.offsetLeft; origY = amp.offsetTop;
-    });
+    const t = e.touches[0];
 
-    document.addEventListener('mousemove', e => {
-      if (!dragging) return;
-      amp.style.left = (origX + e.clientX - startX) + 'px';
-      amp.style.top  = (origY + e.clientY - startY) + 'px';
-    });
+    element.style.left = (origX + t.clientX - startX) + 'px';
+    element.style.top = (origY + t.clientY - startY) + 'px';
+  }, { passive: false });
+
+  element.addEventListener('touchend', () => {
+    dragging = false;
+  });
+
+  element.addEventListener('mousedown', e => {
+    dragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX = element.offsetLeft;
+    origY = element.offsetTop;
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+
+    element.style.left = (origX + e.clientX - startX) + 'px';
+    element.style.top = (origY + e.clientY - startY) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    dragging = false;
+  });
+}
 
     document.addEventListener('mouseup', () => { dragging = false; });
   </script>
