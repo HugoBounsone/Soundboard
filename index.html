@@ -6,21 +6,18 @@
   <title>Mes bruits bizarres</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- PWA : permet d'ajouter sur l'écran d'accueil iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Bruits" />
 </head>
-<body>
+<body class="is-home">
 
-  <!-- ========== PAGE ACCUEIL ========== -->
   <div id="page-home" class="page active">
     <h1 class="app-title">🎵 Mes bruits bizarres</h1>
     <p class="app-subtitle">Choisissez un personnage</p>
     <div class="persons-grid" id="persons-grid"></div>
   </div>
 
-  <!-- ========== PAGE SOUNDBOARD ========== -->
   <div id="page-soundboard" class="page">
     <div class="sb-header">
       <button class="back-btn" onclick="goHome()">← Accueil</button>
@@ -43,7 +40,6 @@
       {
         id: 1,
         name: "Personne 1",
-        // Remplace par le chemin vers une vraie image : "images/personne1.jpg"
         avatar: "😄",
         sounds: [
           { name: "Bruit bizarre 1", duration: "1s", image: "🎤", file: "sounds/p1_son1.mp3" },
@@ -106,6 +102,9 @@
     //  NAVIGATION
     // ================================================
     function openSoundboard(person) {
+      // MODIFICATION : On retire le fond d'écran de l'accueil
+      document.body.classList.remove('is-home');
+
       document.getElementById('page-home').classList.remove('active');
       document.getElementById('page-soundboard').classList.add('active');
 
@@ -132,6 +131,10 @@
 
     function goHome() {
       stopCurrentSound();
+      
+      // MODIFICATION : On remet le fond d'écran de l'accueil
+      document.body.classList.add('is-home');
+
       document.getElementById('page-soundboard').classList.remove('active');
       document.getElementById('page-home').classList.add('active');
     }
@@ -143,7 +146,6 @@
     let currentCard  = null;
 
     function playSound(card, file) {
-      // Arrêter le son en cours si un autre est déjà joué
       stopCurrentSound();
 
       const audio = new Audio(file);
@@ -153,7 +155,6 @@
       card.classList.add('playing');
 
       audio.play().catch(() => {
-        // Le fichier son n'existe pas encore — on joue un bip placeholder
         playPlaceholderBip();
       });
 
@@ -176,7 +177,6 @@
       }
     }
 
-    // Bip temporaire tant que les vrais sons ne sont pas là
     function playPlaceholderBip() {
       const ctx  = new (window.AudioContext || window.webkitAudioContext)();
       const osc  = ctx.createOscillator();
@@ -191,6 +191,5 @@
       osc.stop(ctx.currentTime + 0.6);
     }
   </script>
-
 </body>
 </html>
