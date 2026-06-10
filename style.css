@@ -15,7 +15,7 @@ body {
 
 body.is-home {
   overflow: hidden;
-  height: 100dvh;
+  height: 100dvh; /* dvh = hauteur réelle de l'écran sans les barres Safari */
 }
 
 /* ================================================
@@ -45,7 +45,6 @@ body.is-home {
   overflow: hidden;
   position: relative;
 }
-
 /* Vidéo de fond */
 .bg-video {
   position: absolute;
