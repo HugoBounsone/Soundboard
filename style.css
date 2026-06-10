@@ -16,7 +16,7 @@ body {
 }
 
 body.is-home {
-  background-image: url("BG_SB.png");
+  background-image: url("assets/BG_SB.png");
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
