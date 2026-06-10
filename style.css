@@ -74,6 +74,23 @@ body.is-home {
   cursor: grabbing;
 }
 
+.media-player {
+  position: absolute;
+  top: 60%;
+  left: 15%;
+  width: 45%;
+  max-width: 250px;
+  z-index: 1;
+
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.media-player:active {
+  cursor: grabbing;
+}
 /* Bouton Enter — centré */
 .enter-btn {
   position: absolute;
