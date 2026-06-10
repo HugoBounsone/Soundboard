@@ -13,8 +13,6 @@
 <body class="is-home">
 
   <div id="page-home" class="page active">
-    <h1 class="app-title">🎵 Mes bruits bizarres</h1>
-    <p class="app-subtitle">Choisissez un personnage</p>
     <div class="persons-grid" id="persons-grid"></div>
   </div>
 
@@ -102,9 +100,7 @@
     //  NAVIGATION
     // ================================================
     function openSoundboard(person) {
-      // MODIFICATION : On retire le fond d'écran de l'accueil
       document.body.classList.remove('is-home');
-
       document.getElementById('page-home').classList.remove('active');
       document.getElementById('page-soundboard').classList.add('active');
 
@@ -131,10 +127,7 @@
 
     function goHome() {
       stopCurrentSound();
-      
-      // MODIFICATION : On remet le fond d'écran de l'accueil
       document.body.classList.add('is-home');
-
       document.getElementById('page-soundboard').classList.remove('active');
       document.getElementById('page-home').classList.add('active');
     }
