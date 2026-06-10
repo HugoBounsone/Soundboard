@@ -1,244 +1,265 @@
-/*
-   RESET & BASE
-   ================================================ */
+/* ================================================
+   RESET & BASE
+   ================================================ */
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #1a1a1a;
-  min-height: 100vh;
-  /* Fond par défaut (gris très clair) pour la page des sons */
-  background-color: #f9f9fa; 
-  transition: background 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1a1a1a;
+  min-height: 100vh;
+  background-color: #f9f9fa;
+  transition: background 0.2s ease;
 }
 
-/* MODIFICATION : L'image s'applique UNIQUEMENT quand la classe 'is-home' est active */
 body.is-home {
-  background-image: url("./assets/BG_SB.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-image: url("BG_SB.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 /* ================================================
-   NAVIGATION ENTRE PAGES
-   ================================================ */
+   NAVIGATION ENTRE PAGES
+   ================================================ */
 .page {
-  display: none;
-  padding: 1rem;
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100vh;
+  display: none;
+  padding: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
 }
 
 .page.active {
-  display: block;
+  display: block;
 }
 
 /* ================================================
-   PAGE ACCUEIL
-   ================================================ */
-.app-title {
-  font-size: 24px;
-  font-weight: 600;
-  text-align: center;
-  margin: 1.5rem 0 0.4rem;
-  color: #1a1a1a;
+   PAGE ACCUEIL — calques positionnés librement
+   ================================================ */
+#page-home {
+  padding: 0;
+  max-width: 100%;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.app-subtitle {
-  font-size: 14px;
-  color: #666; /* Un poil plus foncé pour rester lisible sur ton fond */
-  text-align: center;
-  margin-bottom: 1.5rem;
+/* Image déco Amp — ajuste top/left/width comme tu veux */
+.deco-amp {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72%;
+  max-width: 340px;
+  pointer-events: none; /* pas cliquable */
+  z-index: 1;
 }
 
-.persons-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-top: 2rem; /* Ajoute ceci pour respirer un peu par rapport au haut de l'écran */
+/* Bouton Enter — cliquable, centré en bas */
+.enter-btn {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 280px;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.1s ease, filter 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.person-card {
-  background: rgba(255, 255, 255, 0.95); /* Légère transparence pour le style */
-  border: 1px solid #e5e5e5;
-  border-radius: 16px;
-  padding: 1.4rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
+.enter-btn:hover {
+  filter: brightness(1.08);
 }
 
-.person-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.person-card:active {
-  transform: scale(0.96);
-}
-
-.avatar {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-}
-
-.person-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-align: center;
-}
-
-.person-count {
-  font-size: 12px;
-  color: #777;
+.enter-btn:active {
+  transform: translateX(-50%) scale(0.95);
 }
 
 /* ================================================
-   PAGE SOUNDBOARD
-   ================================================ */
+   PAGE PERSONNAGES
+   ================================================ */
 .sb-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #ebebeb;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ebebeb;
 }
 
 .back-btn {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 7px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #555;
-  white-space: nowrap;
-  transition: background 0.15s;
-  -webkit-tap-highlight-color: transparent;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
+  white-space: nowrap;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.back-btn:hover {
-  background: #f5f5f5;
+.back-btn:hover { background: #f5f5f5; }
+.back-btn:active { background: #ebebeb; }
+
+.persons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
 }
 
-.back-btn:active {
-  background: #ebebeb;
+.person-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 1.4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
+.person-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.person-card:active { transform: scale(0.96); }
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  overflow: hidden;
+  /* Pour une vraie image :
+     background: url('images/personne1.jpg') center/cover; */
+}
+
+.person-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.person-count {
+  font-size: 12px;
+  color: #777;
+}
+
+/* ================================================
+   PAGE SOUNDBOARD
+   ================================================ */
 .sb-person-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sb-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-  border: 1px solid #e5e5e5;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  border: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .sb-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
 
 .sb-count {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 2px;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
 }
 
 /* ================================================
-   GRILLE DES SONS
-   ================================================ */
+   GRILLE DES SONS
+   ================================================ */
 .sounds-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
 .sound-card {
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 14px;
-  padding: 0.9rem 0.7rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  padding: 0.9rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.sound-card:active {
-  transform: scale(0.95);
-}
+.sound-card:active { transform: scale(0.95); }
 
 .sound-card.playing {
-  border-color: #7F77DD;
-  background: #EEEDFE;
+  border-color: #FF3FD4;
+  background: #fff0fc;
 }
 
 .sound-img {
-  width: 68px;
-  height: 68px;
-  border-radius: 12px;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  border: 1px solid #ebebeb;
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+  /* Pour une vraie image :
+     background: url('images/son.jpg') center/cover;
+     background-size: cover;
+     font-size: 0; */
 }
 
 .sound-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-align: center;
-  line-height: 1.3;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.3;
 }
 
 .sound-duration {
-  font-size: 11px;
-  color: #aaa;
+  font-size: 11px;
+  color: #aaa;
 }
 
 /* ================================================
-   RESPONSIVE — grands écrans
-   ================================================ */
+   RESPONSIVE — grands écrans
+   ================================================ */
 @media (min-width: 480px) {
-  .page {
-    padding: 1.5rem;
-  }
-  .sounds-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .page { padding: 1.5rem; }
+  .sounds-grid { grid-template-columns: repeat(3, 1fr); }
 }
