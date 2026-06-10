@@ -10,30 +10,36 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Bruits" />
 </head>
+
 <body class="is-home">
 
   <!-- ========== PAGE ACCUEIL ========== -->
   <div id="page-home" class="page active">
     <video class="bg-video" autoplay muted loop playsinline>
-     <source src="assets/HelloKitty2.mov" type="video/quicktime">
+      <source src="assets/HelloKitty2.mov" type="video/quicktime">
     </video>
+
     <img src="assets/MediaPlayer.png" class="media-player" id="media-player" alt="" />
     <img src="assets/Amp.png" class="deco-amp" id="deco-amp" alt="" />
     <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" alt="Enter" />
   </div>
 
-  <!-- ========== PAGE CHOIX PERSONNAGE ========== -->
+  <!-- ========== PAGE PERSONNAGES ========== -->
   <div id="page-persons" class="page">
+
     <div class="sb-header">
-      <button class="back-btn" onclick="goHome()">← Accueil</button>
+      <img src="assets/home_button.png" class="home-btn" onclick="goHome()" alt="Home" />
     </div>
+
     <div class="persons-grid" id="persons-grid"></div>
   </div>
 
   <!-- ========== PAGE SOUNDBOARD ========== -->
   <div id="page-soundboard" class="page">
+
     <div class="sb-header">
       <button class="back-btn" onclick="goPersons()">← Retour</button>
+
       <div class="sb-person-info">
         <div class="sb-avatar" id="sb-avatar"></div>
         <div>
@@ -42,12 +48,13 @@
         </div>
       </div>
     </div>
+
     <div class="sounds-grid" id="sounds-grid"></div>
   </div>
 
   <script>
     // ================================================
-    //  DONNÉES — modifie ici tes personnages et sons
+    // DONNÉES
     // ================================================
     const persons = [
       {
@@ -55,10 +62,8 @@
         name: "Personne 1",
         avatar: "😄",
         sounds: [
-          { name: "Bruit bizarre 1", duration: "1s",   image: "🎤", file: "sounds/p1_son1.mp3" },
-          { name: "Son mystère",     duration: "2s",   image: "🔊", file: "sounds/p1_son2.mp3" },
-          { name: "Glou glou",       duration: "0.5s", image: "💧", file: "sounds/p1_son3.mp3" },
-          { name: "Pfff...",         duration: "1.5s", image: "💨", file: "sounds/p1_son4.mp3" },
+          { name: "Bruit bizarre 1", duration: "1s", image: "🎤", file: "sounds/p1_son1.mp3" },
+          { name: "Son mystère", duration: "2s", image: "🔊", file: "sounds/p1_son2.mp3" },
         ]
       },
       {
@@ -66,9 +71,7 @@
         name: "Personne 2",
         avatar: "🤪",
         sounds: [
-          { name: "Grognement",  duration: "1s",   image: "😤", file: "sounds/p2_son1.mp3" },
-          { name: "Couinement",  duration: "0.8s", image: "🐭", file: "sounds/p2_son2.mp3" },
-          { name: "Claquement",  duration: "0.3s", image: "👏", file: "sounds/p2_son3.mp3" },
+          { name: "Grognement", duration: "1s", image: "😤", file: "sounds/p2_son1.mp3" },
         ]
       },
       {
@@ -76,11 +79,7 @@
         name: "Personne 3",
         avatar: "🎭",
         sounds: [
-          { name: "Rire étrange",  duration: "2s",   image: "😂", file: "sounds/p3_son1.mp3" },
-          { name: "Soupir épique", duration: "1.2s", image: "😮", file: "sounds/p3_son2.mp3" },
-          { name: "Bip bip",       duration: "0.4s", image: "📳", file: "sounds/p3_son3.mp3" },
-          { name: "Hmmmm",         duration: "3s",   image: "🤔", file: "sounds/p3_son4.mp3" },
-          { name: "Couic !",       duration: "0.2s", image: "🐣", file: "sounds/p3_son5.mp3" },
+          { name: "Rire étrange", duration: "2s", image: "😂", file: "sounds/p3_son1.mp3" },
         ]
       },
       {
@@ -88,35 +87,34 @@
         name: "Personne 4",
         avatar: "🦄",
         sounds: [
-          { name: "Son secret", duration: "1s",   image: "🤫", file: "sounds/p4_son1.mp3" },
-          { name: "Wouah",      duration: "0.7s", image: "😲", file: "sounds/p4_son2.mp3" },
+          { name: "Son secret", duration: "1s", image: "🤫", file: "sounds/p4_son1.mp3" },
         ]
       }
     ];
 
     // ================================================
-    //  CONSTRUCTION DE LA PAGE PERSONNAGES
+    // PAGE PERSONNAGES
     // ================================================
     const personsGrid = document.getElementById('persons-grid');
 
     persons.forEach(person => {
       const card = document.createElement('div');
       card.className = 'person-card';
+
       card.innerHTML = `
-        <div class="avatar">${person.avatar}</div>
+        <img src="assets/Character${person.id}.png" class="person-img" />
         <div class="person-name">${person.name}</div>
         <div class="person-count">${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}</div>
       `;
+
       card.addEventListener('click', () => openSoundboard(person));
       personsGrid.appendChild(card);
     });
 
     // ================================================
-    //  NAVIGATION
+    // NAVIGATION
     // ================================================
     document.getElementById('enter-btn').addEventListener('click', goPersons);
-
-  
 
     function openSoundboard(person) {
       document.getElementById('page-persons').classList.remove('active');
@@ -133,11 +131,13 @@
       person.sounds.forEach(sound => {
         const card = document.createElement('div');
         card.className = 'sound-card';
+
         card.innerHTML = `
           <div class="sound-img">${sound.image}</div>
           <div class="sound-name">${sound.name}</div>
           <div class="sound-duration">${sound.duration}</div>
         `;
+
         card.addEventListener('click', () => playSound(card, sound.file));
         soundsGrid.appendChild(card);
       });
@@ -145,114 +145,122 @@
 
     function goHome() {
       stopCurrentSound();
+
       document.body.classList.add('is-home');
+      document.getElementById('page-home').classList.add('active');
       document.getElementById('page-persons').classList.remove('active');
       document.getElementById('page-soundboard').classList.remove('active');
-      document.getElementById('page-home').classList.add('active');
     }
 
-   function goPersons() {
-  stopCurrentSound();
+    function goPersons() {
+      stopCurrentSound();
 
-  document.body.classList.remove('is-home');
-
-  document.getElementById('page-home').classList.remove('active');
-  document.getElementById('page-soundboard').classList.remove('active');
-
-  document.getElementById('page-persons').classList.add('active');
-}
+      document.body.classList.remove('is-home');
+      document.getElementById('page-home').classList.remove('active');
+      document.getElementById('page-soundboard').classList.remove('active');
+      document.getElementById('page-persons').classList.add('active');
+    }
 
     // ================================================
-    //  LECTURE DES SONS
+    // AUDIO
     // ================================================
     let currentAudio = null;
-    let currentCard  = null;
+    let currentCard = null;
 
     function playSound(card, file) {
       stopCurrentSound();
+
       const audio = new Audio(file);
       currentAudio = audio;
-      currentCard  = card;
+      currentCard = card;
+
       card.classList.add('playing');
-      audio.play().catch(() => { playPlaceholderBip(); });
+
+      audio.play().catch(() => playPlaceholderBip());
+
       audio.addEventListener('ended', () => {
         card.classList.remove('playing');
         currentAudio = null;
-        currentCard  = null;
+        currentCard = null;
       });
     }
 
     function stopCurrentSound() {
-      if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
-      if (currentCard)  { currentCard.classList.remove('playing'); currentCard = null; }
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      if (currentCard) {
+        currentCard.classList.remove('playing');
+        currentCard = null;
+      }
     }
 
     function playPlaceholderBip() {
-      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
-      const osc  = ctx.createOscillator();
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
       osc.frequency.value = 300 + Math.random() * 400;
-      osc.type = ['sine','square','sawtooth','triangle'][Math.floor(Math.random() * 4)];
+      osc.type = "sine";
+
       gain.gain.setValueAtTime(0.3, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.6);
     }
 
     // ================================================
-    //  DRAG & DROP AMP.PNG (mobile + desktop)
+    // DRAG
     // ================================================
-   function makeDraggable(element) {
-  let dragging = false;
-  let startX, startY, origX, origY;
+    function makeDraggable(element) {
+      let dragging = false;
+      let startX, startY, origX, origY;
 
-  element.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    dragging = true;
-    startX = t.clientX;
-    startY = t.clientY;
-    origX = element.offsetLeft;
-    origY = element.offsetTop;
-  }, { passive: true });
+      element.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        dragging = true;
+        startX = t.clientX;
+        startY = t.clientY;
+        origX = element.offsetLeft;
+        origY = element.offsetTop;
+      }, { passive: true });
 
-  element.addEventListener('touchmove', e => {
-    if (!dragging) return;
+      element.addEventListener('touchmove', e => {
+        if (!dragging) return;
+        e.preventDefault();
 
-    e.preventDefault();
+        const t = e.touches[0];
+        element.style.left = (origX + t.clientX - startX) + 'px';
+        element.style.top = (origY + t.clientY - startY) + 'px';
+      }, { passive: false });
 
-    const t = e.touches[0];
+      element.addEventListener('touchend', () => dragging = false);
 
-    element.style.left = (origX + t.clientX - startX) + 'px';
-    element.style.top = (origY + t.clientY - startY) + 'px';
-  }, { passive: false });
+      element.addEventListener('mousedown', e => {
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        origX = element.offsetLeft;
+        origY = element.offsetTop;
+      });
 
-  element.addEventListener('touchend', () => {
-    dragging = false;
-  });
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        element.style.left = (origX + e.clientX - startX) + 'px';
+        element.style.top = (origY + e.clientY - startY) + 'px';
+      });
 
-  element.addEventListener('mousedown', e => {
-    dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    origX = element.offsetLeft;
-    origY = element.offsetTop;
-  });
+      document.addEventListener('mouseup', () => dragging = false);
+    }
 
-  document.addEventListener('mousemove', e => {
-    if (!dragging) return;
-
-    element.style.left = (origX + e.clientX - startX) + 'px';
-    element.style.top = (origY + e.clientY - startY) + 'px';
-  });
-
-  document.addEventListener('mouseup', () => {
-    dragging = false;
-  });
-}
     makeDraggable(document.getElementById('deco-amp'));
-makeDraggable(document.getElementById('media-player'));
+    makeDraggable(document.getElementById('media-player'));
 
-   
   </script>
 </body>
 </html>
