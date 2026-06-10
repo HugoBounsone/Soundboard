@@ -232,6 +232,28 @@ body.is-home {
 }
 
 /* ================================================
+   AJOUT POUR LE BOUTON D'ENTRÉE
+   ================================================ */
+.enter-wrapper {
+  display: flex;
+  justify-content: center; /* Centre horizontalement */
+  align-items: center;     /* Centre verticalement */
+  height: 100vh;           /* Prend toute la hauteur de l'écran */
+  width: 100%;
+}
+
+#enter-btn {
+  width: 150px;            /* Ajuste la taille de ton bouton ici */
+  cursor: pointer;
+  transition: transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#enter-btn:active {
+  transform: scale(0.9);   /* Petit effet de rebond au clic */
+}
+
+/* ================================================
    RESPONSIVE — grands écrans
    ================================================ */
 @media (min-width: 480px) {
