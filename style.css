@@ -79,8 +79,8 @@ body.is-home {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 60%;
-  max-width: 280px;
+  width: 30%;
+  max-width: 140px;
   cursor: pointer;
   z-index: 2;
   transition: transform 0.1s ease, filter 0.1s ease;
