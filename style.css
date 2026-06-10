@@ -12,20 +12,12 @@ body {
   color: #1a1a1a;
   min-height: 100vh;
   background-color: #f9f9fa;
-  transition: background 0.2s ease;
 }
 
 body.is-home {
-  background-image: url("assets/BG_SB.png");
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   overflow: hidden;
   height: 100vh;
 }
-
-
 
 /* ================================================
    NAVIGATION ENTRE PAGES
@@ -52,7 +44,18 @@ body.is-home {
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  position: relative; /* ← c'est ça qui manquait */
+  position: relative;
+}
+
+/* Vidéo de fond */
+.bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
 /* Image déco Amp — draggable */
@@ -73,7 +76,7 @@ body.is-home {
   cursor: grabbing;
 }
 
-/* Bouton Enter — centré parfaitement */
+/* Bouton Enter — centré */
 .enter-btn {
   position: absolute;
   top: 50%;
