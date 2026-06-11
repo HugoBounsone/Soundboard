@@ -367,31 +367,7 @@ function drawBlobLinks() {
   requestAnimationFrame(drawBlobLinks);
 }
 
-function startVideo() {
-  const video = document.querySelector(".bg-video");
-  if (!video) return;
 
-  video.muted = true;
-  video.playsInline = true;
-  video.loop = true;
-
-  const tryPlay = () => {
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // retry automatique
-        setTimeout(tryPlay, 200);
-      });
-    }
-  };
-
-  tryPlay();
-}
-
-window.addEventListener("load", startVideo);
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) startVideo();
-});
   
 </script>
 
