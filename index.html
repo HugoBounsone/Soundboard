@@ -96,7 +96,7 @@ function showSystemMessage() {
 
   const count = 3 + Math.floor(Math.random() * 4);
 
-  const baseAngle = -15 + Math.random() * 30;
+ const baseAngle = 0;
 
   for (let i = 0; i < count; i++) {
 
@@ -104,7 +104,7 @@ function showSystemMessage() {
     img.src = 'assets/system_message.png';
     img.className = 'sys-msg';
 
-    const spacing = 70;
+    const spacing = 25;
 
     const offsetX = (i - count / 2) * spacing;
     const offsetY = (i - count / 2) * spacing;
@@ -112,7 +112,7 @@ function showSystemMessage() {
     img.style.transform =
       `translate(${offsetX}px, ${offsetY}px) rotate(${baseAngle}deg)`;
 
-    img.style.animationDelay = (i * 120) + 'ms';
+    img.style.animationDelay = (i * 35) + 'ms';
 
     overlay.appendChild(img);
   }
