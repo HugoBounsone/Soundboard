@@ -14,7 +14,7 @@ body.is-home {
   height: 100dvh;
 }
 
-/* 🎬 VIDEO GLOBAL */
+/* 🎬 VIDEO GLOBAL — fixed pour rester en fond sur toutes les pages */
 .bg-video {
   position: fixed;
   inset: 0;
@@ -101,12 +101,13 @@ body.is-home {
   height: 100dvh;
   touch-action: none;
   padding: 1rem;
+  max-width: 100%;
 }
 
 .sb-header {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .home-btn {
@@ -114,35 +115,27 @@ body.is-home {
   cursor: pointer;
 }
 
-.back-btn {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 7px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #555;
-  white-space: nowrap;
-}
-
-/* GRILLE LIBRE */
+/* GRILLE LIBRE — pleine page sous le header */
 .persons-grid {
   position: relative;
-  height: calc(100dvh - 80px);
+  width: 100%;
+  height: calc(100dvh - 70px);
   overflow: hidden;
 }
 
-/* CARTES DRAGGABLES */
+/* CARTES DRAGGABLES avec animation float */
 .person-card {
   position: absolute;
   cursor: grab;
   touch-action: none;
   -webkit-user-drag: none;
   will-change: transform;
+  animation: float 4s ease-in-out infinite;
 }
 
 .person-card:active {
   cursor: grabbing;
+  animation-play-state: paused; /* stoppe le float pendant le drag */
 }
 
 .person-card.active {
@@ -158,11 +151,25 @@ body.is-home {
 }
 
 /* ================================================
-   PAGE SOUNDBOARD
+   PAGE SOUNDBOARD — fond fixe, contenu scrollable
    ================================================ */
 #page-soundboard {
   padding: 1rem;
   min-height: 100dvh;
+  /* Le fond vidéo est fixed donc il ne bougera pas */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.back-btn {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 7px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #555;
+  white-space: nowrap;
 }
 
 /* Grille en 1 colonne centrée */
@@ -172,6 +179,7 @@ body.is-home {
   align-items: center;
   gap: 16px;
   padding-top: 0.5rem;
+  padding-bottom: 2rem;
 }
 
 .sound-card {
