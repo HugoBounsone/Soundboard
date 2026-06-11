@@ -13,11 +13,13 @@
 
 <body class="is-home">
 
+  <!-- 🎬 VIDEO GLOBAL BACKGROUND (FIX IMPORTANT) -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="assets/HelloKitty2.mov">
+  </video>
+
   <!-- ========== PAGE ACCUEIL ========== -->
   <div id="page-home" class="page active">
-    <video class="bg-video" autoplay muted loop playsinline>
-      <source src="assets/HelloKitty2.mov" type="video/quicktime">
-    </video>
 
     <img src="assets/MediaPlayer.png" class="media-player" id="media-player" alt="" />
     <img src="assets/Amp.png" class="deco-amp" id="deco-amp" alt="" />
@@ -52,213 +54,128 @@
     <div class="sounds-grid" id="sounds-grid"></div>
   </div>
 
-  <script>
-    // ================================================
-    // DONNÉES
-    // ================================================
-    const persons = [
-      {
-        id: 1,
-        name: "Personne 1",
-        avatar: "😄",
-        sounds: [
-          { name: "Bruit bizarre 1", duration: "1s", image: "🎤", file: "sounds/p1_son1.mp3" },
-          { name: "Son mystère", duration: "2s", image: "🔊", file: "sounds/p1_son2.mp3" },
-        ]
-      },
-      {
-        id: 2,
-        name: "Personne 2",
-        avatar: "🤪",
-        sounds: [
-          { name: "Grognement", duration: "1s", image: "😤", file: "sounds/p2_son1.mp3" },
-        ]
-      },
-      {
-        id: 3,
-        name: "Personne 3",
-        avatar: "🎭",
-        sounds: [
-          { name: "Rire étrange", duration: "2s", image: "😂", file: "sounds/p3_son1.mp3" },
-        ]
-      },
-      {
-        id: 4,
-        name: "Personne 4",
-        avatar: "🦄",
-        sounds: [
-          { name: "Son secret", duration: "1s", image: "🤫", file: "sounds/p4_son1.mp3" },
-        ]
-      }
-    ];
+<script>
+const persons = [
+  { id: 1, name: "Personne 1", avatar: "😄", sounds: [] },
+  { id: 2, name: "Personne 2", avatar: "🤪", sounds: [] },
+  { id: 3, name: "Personne 3", avatar: "🎭", sounds: [] },
+  { id: 4, name: "Personne 4", avatar: "🦄", sounds: [] }
+];
 
-    // ================================================
-    // PAGE PERSONNAGES
-    // ================================================
-    const personsGrid = document.getElementById('persons-grid');
+// ============================
+// PERSONNAGES (CLEAN + DRAG)
+// ============================
+const personsGrid = document.getElementById('persons-grid');
 
-   persons.forEach(person => {
+const positions = [
+  { x: 40, y: 40 },
+  { x: 180, y: 80 },
+  { x: 60, y: 220 },
+  { x: 200, y: 240 }
+];
+
+persons.forEach((person, i) => {
   const card = document.createElement('div');
   card.className = 'person-card';
+
+  card.style.left = positions[i].x + "px";
+  card.style.top = positions[i].y + "px";
 
   card.innerHTML = `
     <img src="assets/Character${person.id}.png" class="person-img" />
   `;
 
   card.addEventListener('click', () => openSoundboard(person));
+
+  makeDraggable(card);
   personsGrid.appendChild(card);
 });
 
-    // ================================================
-    // NAVIGATION
-    // ================================================
-    document.getElementById('enter-btn').addEventListener('click', goPersons);
+// ============================
+// NAVIGATION
+// ============================
+document.getElementById('enter-btn').addEventListener('click', goPersons);
 
-    function openSoundboard(person) {
-      document.getElementById('page-persons').classList.remove('active');
-      document.getElementById('page-soundboard').classList.add('active');
+function openSoundboard(person) {
+  document.getElementById('page-persons').classList.remove('active');
+  document.getElementById('page-soundboard').classList.add('active');
 
-      document.getElementById('sb-avatar').textContent = person.avatar;
-      document.getElementById('sb-name').textContent = person.name;
-      document.getElementById('sb-count').textContent =
-        `${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}`;
+  document.getElementById('sb-avatar').textContent = person.avatar;
+  document.getElementById('sb-name').textContent = person.name;
+  document.getElementById('sb-count').textContent =
+    `${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}`;
 
-      const soundsGrid = document.getElementById('sounds-grid');
-      soundsGrid.innerHTML = '';
+  const grid = document.getElementById('sounds-grid');
+  grid.innerHTML = '';
+}
 
-      person.sounds.forEach(sound => {
-        const card = document.createElement('div');
-        card.className = 'sound-card';
+function goHome() {
+  stopSound();
+  document.body.classList.add('is-home');
+  document.getElementById('page-home').classList.add('active');
+  document.getElementById('page-persons').classList.remove('active');
+  document.getElementById('page-soundboard').classList.remove('active');
+}
 
-        card.innerHTML = `
-          <div class="sound-img">${sound.image}</div>
-          <div class="sound-name">${sound.name}</div>
-          <div class="sound-duration">${sound.duration}</div>
-        `;
+function goPersons() {
+  stopSound();
+  document.body.classList.remove('is-home');
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-soundboard').classList.remove('active');
+  document.getElementById('page-persons').classList.add('active');
+}
 
-        card.addEventListener('click', () => playSound(card, sound.file));
-        soundsGrid.appendChild(card);
-      });
-    }
+// ============================
+// AUDIO (placeholder safe)
+// ============================
+function stopSound() {}
 
-    function goHome() {
-      stopCurrentSound();
+// ============================
+// DRAG SYSTEM (WORK MOBILE + DESKTOP)
+// ============================
+function makeDraggable(el) {
+  let dragging = false;
+  let startX, startY, origX, origY;
 
-      document.body.classList.add('is-home');
-      document.getElementById('page-home').classList.add('active');
-      document.getElementById('page-persons').classList.remove('active');
-      document.getElementById('page-soundboard').classList.remove('active');
-    }
+  el.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    dragging = true;
+    startX = t.clientX;
+    startY = t.clientY;
+    origX = el.offsetLeft;
+    origY = el.offsetTop;
+  }, { passive: true });
 
-    function goPersons() {
-      stopCurrentSound();
+  el.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    el.style.left = (origX + t.clientX - startX) + 'px';
+    el.style.top = (origY + t.clientY - startY) + 'px';
+  }, { passive: false });
 
-      document.body.classList.remove('is-home');
-      document.getElementById('page-home').classList.remove('active');
-      document.getElementById('page-soundboard').classList.remove('active');
-      document.getElementById('page-persons').classList.add('active');
-    }
+  el.addEventListener('touchend', () => dragging = false);
 
-    // ================================================
-    // AUDIO
-    // ================================================
-    let currentAudio = null;
-    let currentCard = null;
+  el.addEventListener('mousedown', e => {
+    dragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX = el.offsetLeft;
+    origY = el.offsetTop;
+  });
 
-    function playSound(card, file) {
-      stopCurrentSound();
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    el.style.left = (origX + e.clientX - startX) + 'px';
+    el.style.top = (origY + e.clientY - startY) + 'px';
+  });
 
-      const audio = new Audio(file);
-      currentAudio = audio;
-      currentCard = card;
+  document.addEventListener('mouseup', () => dragging = false);
+}
 
-      card.classList.add('playing');
+makeDraggable(document.getElementById('deco-amp'));
+makeDraggable(document.getElementById('media-player'));
+</script>
 
-      audio.play().catch(() => playPlaceholderBip());
-
-      audio.addEventListener('ended', () => {
-        card.classList.remove('playing');
-        currentAudio = null;
-        currentCard = null;
-      });
-    }
-
-    function stopCurrentSound() {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-      }
-      if (currentCard) {
-        currentCard.classList.remove('playing');
-        currentCard = null;
-      }
-    }
-
-    function playPlaceholderBip() {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.frequency.value = 300 + Math.random() * 400;
-      osc.type = "sine";
-
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-
-      osc.start();
-      osc.stop(ctx.currentTime + 0.6);
-    }
-
-    // ================================================
-    // DRAG
-    // ================================================
-    function makeDraggable(element) {
-      let dragging = false;
-      let startX, startY, origX, origY;
-
-      element.addEventListener('touchstart', e => {
-        const t = e.touches[0];
-        dragging = true;
-        startX = t.clientX;
-        startY = t.clientY;
-        origX = element.offsetLeft;
-        origY = element.offsetTop;
-      }, { passive: true });
-
-      element.addEventListener('touchmove', e => {
-        if (!dragging) return;
-        e.preventDefault();
-
-        const t = e.touches[0];
-        element.style.left = (origX + t.clientX - startX) + 'px';
-        element.style.top = (origY + t.clientY - startY) + 'px';
-      }, { passive: false });
-
-      element.addEventListener('touchend', () => dragging = false);
-
-      element.addEventListener('mousedown', e => {
-        dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        origX = element.offsetLeft;
-        origY = element.offsetTop;
-      });
-
-      document.addEventListener('mousemove', e => {
-        if (!dragging) return;
-        element.style.left = (origX + e.clientX - startX) + 'px';
-        element.style.top = (origY + e.clientY - startY) + 'px';
-      });
-
-      document.addEventListener('mouseup', () => dragging = false);
-    }
-
-    makeDraggable(document.getElementById('deco-amp'));
-    makeDraggable(document.getElementById('media-player'));
-
-  </script>
 </body>
 </html>
