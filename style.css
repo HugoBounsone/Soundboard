@@ -4,11 +4,8 @@
   padding: 0;
 }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  touch-action: none;
-  overscroll-behavior: none;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #000;
 }
 
@@ -17,7 +14,7 @@ body.is-home {
   height: 100dvh;
 }
 
-/* 🎬 VIDEO GLOBAL FIX */
+/* 🎬 VIDEO GLOBAL */
 .bg-video {
   position: fixed;
   inset: 0;
@@ -94,15 +91,16 @@ body.is-home {
 .home-btn {
   width: 52px;
   margin-top: 8px;
+  cursor: pointer;
 }
 
-/* GRID */
+/* GRID FREE */
 .persons-grid {
   position: relative;
   height: 70vh;
 }
 
-/* DRAG ELEMENTS */
+/* FLOAT + DRAG */
 .person-card {
   position: absolute;
   cursor: grab;
@@ -114,7 +112,7 @@ body.is-home {
   transform: scale(0.92);
 }
 
-/* GLOW ACTIVE */
+/* ✨ GLOW SELECTED */
 .person-card.active {
   filter: drop-shadow(0 0 20px rgba(255, 63, 212, 0.9));
   transform: scale(1.1);
@@ -125,4 +123,11 @@ body.is-home {
   width: 180px;
   user-select: none;
   pointer-events: none;
+}
+
+/* SOUND */
+.sounds-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
