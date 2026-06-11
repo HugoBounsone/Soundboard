@@ -16,7 +16,6 @@
 
 <!-- ========== HOME ========== -->
 <div id="page-home" class="page active">
-
   <img src="assets/MediaPlayer.png" class="media-player" id="media-player" />
   <img src="assets/Amp.png" class="deco-amp" id="deco-amp" />
   <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" />
@@ -59,9 +58,20 @@ const persons = [
 ];
 
 // ============================
-// PERSONNAGES + PHYSIQUE
+// BLOQUE SCROLL GLOBAL
 // ============================
-const personsGrid = document.getElementById('persons-grid');
+document.body.style.overflow = "hidden";
+document.documentElement.style.overflow = "hidden";
+
+let isDraggingGlobal = false;
+document.addEventListener('touchmove', e => {
+  if (isDraggingGlobal) e.preventDefault();
+}, { passive: false });
+
+// ============================
+// PERSONNAGES
+// ============================
+const grid = document.getElementById('persons-grid');
 
 const positions = [
   { x: 40, y: 40 },
@@ -70,21 +80,19 @@ const positions = [
   { x: 210, y: 260 }
 ];
 
-persons.forEach((person, i) => {
-  const card = document.createElement('div');
-  card.className = 'person-card';
+persons.forEach((p, i) => {
+  const el = document.createElement('div');
+  el.className = 'person-card';
 
-  card.style.left = positions[i].x + "px";
-  card.style.top = positions[i].y + "px";
+  el.style.left = positions[i].x + "px";
+  el.style.top = positions[i].y + "px";
 
-  card.innerHTML = `
-    <img src="assets/Character${person.id}.png" class="person-img" />
-  `;
+  el.innerHTML = `<img src="assets/Character${p.id}.png" class="person-img"/>`;
 
-  card.addEventListener('click', () => openSoundboard(person));
+  makeDraggable(el);
+  el.addEventListener('click', () => openSoundboard(p));
 
-  makeDraggable(card);
-  personsGrid.appendChild(card);
+  grid.appendChild(el);
 });
 
 // ============================
@@ -103,7 +111,6 @@ function openSoundboard(person) {
 }
 
 function goHome() {
-  stopSound();
   document.body.classList.add('is-home');
   document.getElementById('page-home').classList.add('active');
   document.getElementById('page-persons').classList.remove('active');
@@ -111,30 +118,21 @@ function goHome() {
 }
 
 function goPersons() {
-  stopSound();
   document.body.classList.remove('is-home');
   document.getElementById('page-home').classList.remove('active');
-  document.getElementById('page-soundboard').classList.remove('active');
   document.getElementById('page-persons').classList.add('active');
 }
 
 // ============================
-// AUDIO
-// ============================
-function stopSound() {}
-
-// ============================
-// DRAG + PHYSICS + GLOW
+// DRAG SYSTEM FIX COMPLET
 // ============================
 function makeDraggable(el) {
   let dragging = false;
-
   let startX, startY, origX, origY;
-  let velocityX = 0;
-  let velocityY = 0;
-  let lastX = 0;
-  let lastY = 0;
-  let lastTime = 0;
+
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
 
   function select() {
     document.querySelectorAll('.person-card')
@@ -146,6 +144,7 @@ function makeDraggable(el) {
   el.addEventListener('touchstart', e => {
     const t = e.touches[0];
     dragging = true;
+    isDraggingGlobal = true;
 
     startX = t.clientX;
     startY = t.clientY;
@@ -161,32 +160,31 @@ function makeDraggable(el) {
 
     const t = e.touches[0];
 
-    const x = origX + (t.clientX - startX);
-    const y = origY + (t.clientY - startY);
+    let x = origX + (t.clientX - startX);
+    let y = origY + (t.clientY - startY);
 
-    const now = performance.now();
-    const dt = now - lastTime || 16;
+    const maxX = window.innerWidth - el.offsetWidth;
+    const maxY = window.innerHeight - el.offsetHeight;
 
-    velocityX = (x - lastX) / dt;
-    velocityY = (y - lastY) / dt;
+    x = clamp(x, 0, maxX);
+    y = clamp(y, 0, maxY);
 
-    lastX = x;
-    lastY = y;
-    lastTime = now;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
 
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
-
+    e.preventDefault();
   }, { passive: false });
 
   el.addEventListener('touchend', () => {
     dragging = false;
-    inertia();
+    isDraggingGlobal = false;
+    inertia(el);
   });
 
   // MOUSE
   el.addEventListener('mousedown', e => {
     dragging = true;
+    isDraggingGlobal = true;
 
     startX = e.clientX;
     startY = e.clientY;
@@ -200,51 +198,65 @@ function makeDraggable(el) {
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
 
-    const x = origX + (e.clientX - startX);
-    const y = origY + (e.clientY - startY);
+    let x = origX + (e.clientX - startX);
+    let y = origY + (e.clientY - startY);
 
-    const now = performance.now();
-    const dt = now - lastTime || 16;
+    const maxX = window.innerWidth - el.offsetWidth;
+    const maxY = window.innerHeight - el.offsetHeight;
 
-    velocityX = (x - lastX) / dt;
-    velocityY = (y - lastY) / dt;
+    x = clamp(x, 0, maxX);
+    y = clamp(y, 0, maxY);
 
-    lastX = x;
-    lastY = y;
-    lastTime = now;
-
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
+    el.style.left = x + "px";
+    el.style.top = y + "px";
   });
 
   document.addEventListener('mouseup', () => {
     dragging = false;
-    inertia();
+    isDraggingGlobal = false;
+    inertia(el);
   });
-
-  // 🧲 PHYSICS INERTIA
-  function inertia() {
-    let vx = velocityX * 20;
-    let vy = velocityY * 20;
-
-    function step() {
-      vx *= 0.92;
-      vy *= 0.92;
-
-      el.style.left = el.offsetLeft + vx + 'px';
-      el.style.top = el.offsetTop + vy + 'px';
-
-      if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
-        requestAnimationFrame(step);
-      }
-    }
-
-    requestAnimationFrame(step);
-  }
 }
 
-makeDraggable(document.getElementById('deco-amp'));
-makeDraggable(document.getElementById('media-player'));
+// ============================
+// INERTIA
+// ============================
+function inertia(el) {
+  let vx = 0;
+  let vy = 0;
+
+  let lastX = el.offsetLeft;
+  let lastY = el.offsetTop;
+
+  function step() {
+    const x = el.offsetLeft;
+    const y = el.offsetTop;
+
+    vx = (x - lastX) * 0.9;
+    vy = (y - lastY) * 0.9;
+
+    lastX = x;
+    lastY = y;
+
+    let nx = x + vx;
+    let ny = y + vy;
+
+    const maxX = window.innerWidth - el.offsetWidth;
+    const maxY = window.innerHeight - el.offsetHeight;
+
+    nx = Math.max(0, Math.min(maxX, nx));
+    ny = Math.max(0, Math.min(maxY, ny));
+
+    el.style.left = nx + "px";
+    el.style.top = ny + "px";
+
+    if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
 </script>
 
 </body>
