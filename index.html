@@ -15,6 +15,9 @@
   <source src="assets/HelloKitty2.mov" type="video/mp4">
 </video>
 
+<!-- 💥 SYSTEM MESSAGE OVERLAY -->
+<div id="system-overlay"></div>
+
 <!-- ========== HOME ========== -->
 <div id="page-home" class="page active">
   <img src="assets/MediaPlayer.png" class="media-player" id="media-player" />
@@ -25,7 +28,6 @@
 <!-- ========== PERSONNAGES ========== -->
 <div id="page-persons" class="page">
   <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
-  <!-- Les cartes sont injectées directement ici par le JS -->
 </div>
 
 <!-- ========== SOUNDBOARD ========== -->
@@ -84,7 +86,61 @@ const currentPositions = [
 ];
 
 // ============================
-// CONSTRUCTION DES CARTES — dans #page-persons directement
+// SYSTEM MESSAGE EFFECT
+// ============================
+const overlay = document.getElementById('system-overlay');
+let sysTimeout = null;
+
+function showSystemMessage() {
+  overlay.innerHTML = '';
+
+  // Entre 3 et 6 copies de l'image en diagonale
+  const count = 3 + Math.floor(Math.random() * 4);
+  const baseAngle = -15 + Math.random() * 30; // angle diagonal aléatoire
+
+  for (let i = 0; i < count; i++) {
+    const img = document.createElement('img');
+    img.src = 'assets/system_message.png';
+    img.className = 'sys-msg';
+
+    // Décalage en diagonale : chaque copie est un peu plus bas/droite
+    const offsetX = i * 60 - (count * 30);
+    const offsetY = i * 50 - (count * 25);
+    const angle   = baseAngle + (Math.random() * 6 - 3);
+    const delay   = i * 60;
+
+    img.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${angle}deg)`;
+    img.style.animationDelay = delay + 'ms';
+
+    overlay.appendChild(img);
+  }
+
+  overlay.classList.add('visible');
+
+  // Disparaît après 1.5 à 3 secondes
+  const duration = 1500 + Math.random() * 1500;
+  sysTimeout = setTimeout(() => {
+    overlay.classList.remove('visible');
+  }, duration);
+}
+
+function scheduleNext() {
+  // Réapparaît toutes les 8 à 20 secondes
+  const delay = 8000 + Math.random() * 12000;
+  setTimeout(() => {
+    showSystemMessage();
+    scheduleNext();
+  }, delay);
+}
+
+// Démarre après 3 secondes
+setTimeout(() => {
+  showSystemMessage();
+  scheduleNext();
+}, 3000);
+
+// ============================
+// CONSTRUCTION DES CARTES PERSONNAGES
 // ============================
 const pagePersons = document.getElementById('page-persons');
 const cards = [];
@@ -191,16 +247,13 @@ function makeDraggable(el, index, isPersonCard) {
     const halfW = el.offsetWidth  / 2;
     const halfH = el.offsetHeight / 2;
     let cx, cy;
-
     if (isPersonCard) {
-      // Limites = bords de l'écran, peut sortir de moitié
       cx = Math.max(-halfW, Math.min(window.innerWidth  - halfW, x));
       cy = Math.max(-halfH, Math.min(window.innerHeight - halfH, y));
     } else {
       cx = Math.max(0, Math.min(window.innerWidth  - el.offsetWidth,  x));
       cy = Math.max(0, Math.min(window.innerHeight - el.offsetHeight, y));
     }
-
     el.style.left = cx + 'px';
     el.style.top  = cy + 'px';
     if (index !== undefined) {
