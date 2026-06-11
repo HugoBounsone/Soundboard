@@ -41,8 +41,7 @@
 <script>
 const persons = [
   {
-    id: 1,
-    name: "Personne 1",
+    id: 1, name: "Personne 1",
     sounds: [
       { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p1_son1.mp3" },
       { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p1_son2.mp3" },
@@ -51,8 +50,7 @@ const persons = [
     ]
   },
   {
-    id: 2,
-    name: "Personne 2",
+    id: 2, name: "Personne 2",
     sounds: [
       { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p2_son1.mp3" },
       { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p2_son2.mp3" },
@@ -61,8 +59,7 @@ const persons = [
     ]
   },
   {
-    id: 3,
-    name: "Personne 3",
+    id: 3, name: "Personne 3",
     sounds: [
       { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p3_son1.mp3" },
       { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p3_son2.mp3" },
@@ -71,8 +68,7 @@ const persons = [
     ]
   },
   {
-    id: 4,
-    name: "Personne 4",
+    id: 4, name: "Personne 4",
     sounds: [
       { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p4_son1.mp3" },
       { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p4_son2.mp3" },
@@ -82,7 +78,6 @@ const persons = [
   }
 ];
 
-// Positions initiales des cartes personnages
 const currentPositions = [
   { x: 40,  y: 40  },
   { x: 190, y: 90  },
@@ -101,9 +96,11 @@ persons.forEach((person, i) => {
   card.className = 'person-card';
   card.style.left = currentPositions[i].x + 'px';
   card.style.top  = currentPositions[i].y + 'px';
+  // Animation float avec délai différent par carte
+  card.style.animationDelay = (i * 0.8) + 's';
   card.innerHTML = `<img src="assets/Character${person.id}.png" class="person-img" />`;
   card.addEventListener('click', () => openSoundboard(person));
-  makeDraggable(card, i);
+  makeDraggable(card, i, true);
   personsGrid.appendChild(card);
   cards.push(card);
 });
@@ -117,7 +114,6 @@ function openSoundboard(person) {
   document.getElementById('page-persons').classList.remove('active');
   document.getElementById('page-soundboard').classList.add('active');
 
-  // Construit la grille des sons
   const soundsGrid = document.getElementById('sounds-grid');
   soundsGrid.innerHTML = '';
 
@@ -145,7 +141,6 @@ function goPersons() {
   document.getElementById('page-soundboard').classList.remove('active');
   document.getElementById('page-persons').classList.add('active');
 
-  // Restaure les positions mémorisées
   cards.forEach((card, i) => {
     card.style.left = currentPositions[i].x + 'px';
     card.style.top  = currentPositions[i].y + 'px';
@@ -190,41 +185,54 @@ function playPlaceholderBip() {
 }
 
 // ============================
-// DRAG SIMPLE
+// DRAG SIMPLE — corrigé pour la home
 // ============================
-function makeDraggable(el, index) {
+function makeDraggable(el, index, isPersonCard) {
   let dragging = false;
   let startX, startY, origX, origY;
 
-  function getGridBounds() {
-    const grid = document.getElementById('persons-grid');
-    return {
-      maxX: grid.offsetWidth  - el.offsetWidth,
-      maxY: grid.offsetHeight - el.offsetHeight
-    };
-  }
-
-  function clamp(val, min, max) {
-    return Math.max(min, Math.min(max, val));
-  }
-
+  // Limite : moitié de l'élément peut sortir de l'écran
   function applyPos(x, y) {
-    const { maxX, maxY } = getGridBounds();
-    const cx = clamp(x, 0, Math.max(0, maxX));
-    const cy = clamp(y, 0, Math.max(0, maxY));
+    const halfW = el.offsetWidth  / 2;
+    const halfH = el.offsetHeight / 2;
+
+    let minX, maxX, minY, maxY;
+
+    if (isPersonCard) {
+      // Cartes personnages : peuvent sortir de moitié
+      const grid = document.getElementById('persons-grid');
+      minX = -halfW;
+      maxX = grid.offsetWidth  - halfW;
+      minY = -halfH;
+      maxY = grid.offsetHeight - halfH;
+    } else {
+      // Éléments home : limités à la page entière
+      minX = 0;
+      maxX = window.innerWidth  - el.offsetWidth;
+      minY = 0;
+      maxY = window.innerHeight - el.offsetHeight;
+    }
+
+    const cx = Math.max(minX, Math.min(maxX, x));
+    const cy = Math.max(minY, Math.min(maxY, y));
     el.style.left = cx + 'px';
     el.style.top  = cy + 'px';
+
     if (index !== undefined) {
       currentPositions[index].x = cx;
       currentPositions[index].y = cy;
     }
   }
 
+  // TOUCH
   el.addEventListener('touchstart', e => {
+    e.stopPropagation();
     const t = e.touches[0];
     dragging = true;
-    startX = t.clientX; startY = t.clientY;
-    origX = el.offsetLeft; origY = el.offsetTop;
+    startX = t.clientX;
+    startY = t.clientY;
+    origX  = el.offsetLeft;
+    origY  = el.offsetTop;
   }, { passive: true });
 
   el.addEventListener('touchmove', e => {
@@ -236,10 +244,14 @@ function makeDraggable(el, index) {
 
   el.addEventListener('touchend', () => { dragging = false; });
 
+  // MOUSE
   el.addEventListener('mousedown', e => {
+    e.stopPropagation();
     dragging = true;
-    startX = e.clientX; startY = e.clientY;
-    origX = el.offsetLeft; origY = el.offsetTop;
+    startX = e.clientX;
+    startY = e.clientY;
+    origX  = el.offsetLeft;
+    origY  = el.offsetTop;
   });
 
   document.addEventListener('mousemove', e => {
@@ -250,8 +262,9 @@ function makeDraggable(el, index) {
   document.addEventListener('mouseup', () => { dragging = false; });
 }
 
-makeDraggable(document.getElementById('deco-amp'));
-makeDraggable(document.getElementById('media-player'));
+// Home : drag de Amp et MediaPlayer
+makeDraggable(document.getElementById('deco-amp'),     undefined, false);
+makeDraggable(document.getElementById('media-player'), undefined, false);
 </script>
 
 </body>
