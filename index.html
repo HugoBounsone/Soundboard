@@ -10,7 +10,7 @@
 <body class="is-home">
 
 <!-- 🎬 VIDEO BACKGROUND GLOBAL -->
-<video class="bg-video" autoplay muted loop playsinline>
+<video class="bg-video" autoplay muted loop playsinline preload="auto">
   <source src="assets/HelloKitty2.mp4" type="video/mp4">
 </video>
 
@@ -367,18 +367,31 @@ function drawBlobLinks() {
   requestAnimationFrame(drawBlobLinks);
 }
 
-  window.addEventListener("load", () => {
+function startVideo() {
   const video = document.querySelector(".bg-video");
-  if (video) {
-    video.muted = true;
-    video.play().catch(() => {});
-  }
-});
+  if (!video) return;
 
-document.addEventListener("click", () => {
-  const video = document.querySelector(".bg-video");
-  if (video && video.paused) video.play();
-}, { once: true });
+  video.muted = true;
+  video.playsInline = true;
+  video.loop = true;
+
+  const tryPlay = () => {
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // retry automatique
+        setTimeout(tryPlay, 200);
+      });
+    }
+  };
+
+  tryPlay();
+}
+
+window.addEventListener("load", startVideo);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) startVideo();
+});
   
 </script>
 
