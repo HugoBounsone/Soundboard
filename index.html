@@ -16,7 +16,6 @@
 
 <!-- ========== HOME ========== -->
 <div id="page-home" class="page active">
-
   <img src="assets/MediaPlayer.png" class="media-player" id="media-player" />
   <img src="assets/Amp.png" class="deco-amp" id="deco-amp" />
   <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" />
@@ -24,20 +23,16 @@
 
 <!-- ========== PERSONNAGES ========== -->
 <div id="page-persons" class="page">
-
   <div class="sb-header">
     <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
   </div>
-
   <div class="persons-grid" id="persons-grid"></div>
 </div>
 
 <!-- ========== SOUNDBOARD ========== -->
 <div id="page-soundboard" class="page">
-
   <div class="sb-header">
     <button class="back-btn" onclick="goPersons()">← Retour</button>
-
     <div class="sb-person-info">
       <div class="sb-avatar" id="sb-avatar"></div>
       <div>
@@ -46,7 +41,6 @@
       </div>
     </div>
   </div>
-
   <div class="sounds-grid" id="sounds-grid"></div>
 </div>
 
@@ -59,32 +53,34 @@ const persons = [
 ];
 
 // ============================
-// PERSONNAGES + PHYSIQUE
+// POSITIONS INITIALES (fixes, mémorisées)
 // ============================
-const personsGrid = document.getElementById('persons-grid');
-
-const positions = [
-  { x: 40, y: 40 },
-  { x: 190, y: 90 },
-  { x: 60, y: 240 },
+const initialPositions = [
+  { x: 40,  y: 40  },
+  { x: 190, y: 90  },
+  { x: 60,  y: 240 },
   { x: 210, y: 260 }
 ];
+
+// Positions courantes — persistent quand on change de page
+const currentPositions = initialPositions.map(p => ({ ...p }));
+
+// ============================
+// CONSTRUCTION DES CARTES
+// ============================
+const personsGrid = document.getElementById('persons-grid');
+const cards = [];
 
 persons.forEach((person, i) => {
   const card = document.createElement('div');
   card.className = 'person-card';
-
-  card.style.left = positions[i].x + "px";
-  card.style.top = positions[i].y + "px";
-
-  card.innerHTML = `
-    <img src="assets/Character${person.id}.png" class="person-img" />
-  `;
-
+  card.style.left = currentPositions[i].x + 'px';
+  card.style.top  = currentPositions[i].y + 'px';
+  card.innerHTML = `<img src="assets/Character${person.id}.png" class="person-img" />`;
   card.addEventListener('click', () => openSoundboard(person));
-
-  makeDraggable(card);
+  makeDraggable(card, i);
   personsGrid.appendChild(card);
+  cards.push(card);
 });
 
 // ============================
@@ -95,7 +91,6 @@ document.getElementById('enter-btn').addEventListener('click', goPersons);
 function openSoundboard(person) {
   document.getElementById('page-persons').classList.remove('active');
   document.getElementById('page-soundboard').classList.add('active');
-
   document.getElementById('sb-avatar').textContent = person.avatar;
   document.getElementById('sb-name').textContent = person.name;
   document.getElementById('sb-count').textContent =
@@ -116,6 +111,12 @@ function goPersons() {
   document.getElementById('page-home').classList.remove('active');
   document.getElementById('page-soundboard').classList.remove('active');
   document.getElementById('page-persons').classList.add('active');
+
+  // Restaure les positions mémorisées
+  cards.forEach((card, i) => {
+    card.style.left = currentPositions[i].x + 'px';
+    card.style.top  = currentPositions[i].y + 'px';
+  });
 }
 
 // ============================
@@ -124,59 +125,69 @@ function goPersons() {
 function stopSound() {}
 
 // ============================
-// DRAG + PHYSICS + GLOW
+// DRAG + PHYSICS + LIMITES
 // ============================
-function makeDraggable(el) {
+function makeDraggable(el, index) {
   let dragging = false;
-
   let startX, startY, origX, origY;
-  let velocityX = 0;
-  let velocityY = 0;
-  let lastX = 0;
-  let lastY = 0;
-  let lastTime = 0;
+  let velocityX = 0, velocityY = 0;
+  let lastX = 0, lastY = 0, lastTime = 0;
+  let animFrame = null;
+
+  function getGridBounds() {
+    const grid = document.getElementById('persons-grid');
+    return {
+      maxX: grid.offsetWidth  - el.offsetWidth,
+      maxY: grid.offsetHeight - el.offsetHeight
+    };
+  }
+
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function applyPos(x, y) {
+    const { maxX, maxY } = getGridBounds();
+    const cx = clamp(x, 0, maxX);
+    const cy = clamp(y, 0, maxY);
+    el.style.left = cx + 'px';
+    el.style.top  = cy + 'px';
+    if (index !== undefined) {
+      currentPositions[index].x = cx;
+      currentPositions[index].y = cy;
+    }
+  }
 
   function select() {
-    document.querySelectorAll('.person-card')
-      .forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.person-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
   }
 
   // TOUCH
   el.addEventListener('touchstart', e => {
+    if (animFrame) cancelAnimationFrame(animFrame);
     const t = e.touches[0];
     dragging = true;
-
-    startX = t.clientX;
-    startY = t.clientY;
-
-    origX = el.offsetLeft;
-    origY = el.offsetTop;
-
+    startX = t.clientX; startY = t.clientY;
+    origX = el.offsetLeft; origY = el.offsetTop;
+    velocityX = 0; velocityY = 0;
+    lastX = origX; lastY = origY;
+    lastTime = performance.now();
     select();
   }, { passive: true });
 
   el.addEventListener('touchmove', e => {
     if (!dragging) return;
-
+    e.preventDefault();
     const t = e.touches[0];
-
     const x = origX + (t.clientX - startX);
     const y = origY + (t.clientY - startY);
-
     const now = performance.now();
     const dt = now - lastTime || 16;
-
     velocityX = (x - lastX) / dt;
     velocityY = (y - lastY) / dt;
-
-    lastX = x;
-    lastY = y;
-    lastTime = now;
-
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
-
+    lastX = x; lastY = y; lastTime = now;
+    applyPos(x, y);
   }, { passive: false });
 
   el.addEventListener('touchend', () => {
@@ -186,43 +197,35 @@ function makeDraggable(el) {
 
   // MOUSE
   el.addEventListener('mousedown', e => {
+    if (animFrame) cancelAnimationFrame(animFrame);
     dragging = true;
-
-    startX = e.clientX;
-    startY = e.clientY;
-
-    origX = el.offsetLeft;
-    origY = el.offsetTop;
-
+    startX = e.clientX; startY = e.clientY;
+    origX = el.offsetLeft; origY = el.offsetTop;
+    velocityX = 0; velocityY = 0;
+    lastX = origX; lastY = origY;
+    lastTime = performance.now();
     select();
   });
 
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-
     const x = origX + (e.clientX - startX);
     const y = origY + (e.clientY - startY);
-
     const now = performance.now();
     const dt = now - lastTime || 16;
-
     velocityX = (x - lastX) / dt;
     velocityY = (y - lastY) / dt;
-
-    lastX = x;
-    lastY = y;
-    lastTime = now;
-
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
+    lastX = x; lastY = y; lastTime = now;
+    applyPos(x, y);
   });
 
   document.addEventListener('mouseup', () => {
+    if (!dragging) return;
     dragging = false;
     inertia();
   });
 
-  // 🧲 PHYSICS INERTIA
+  // INERTIE avec limites
   function inertia() {
     let vx = velocityX * 20;
     let vy = velocityY * 20;
@@ -230,19 +233,24 @@ function makeDraggable(el) {
     function step() {
       vx *= 0.92;
       vy *= 0.92;
+      const nx = el.offsetLeft + vx;
+      const ny = el.offsetTop  + vy;
+      applyPos(nx, ny);
 
-      el.style.left = el.offsetLeft + vx + 'px';
-      el.style.top = el.offsetTop + vy + 'px';
+      // Rebond sur les bords
+      const { maxX, maxY } = getGridBounds();
+      if (el.offsetLeft <= 0 || el.offsetLeft >= maxX) vx *= -0.4;
+      if (el.offsetTop  <= 0 || el.offsetTop  >= maxY) vy *= -0.4;
 
-      if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
-        requestAnimationFrame(step);
+      if (Math.abs(vx) > 0.3 || Math.abs(vy) > 0.3) {
+        animFrame = requestAnimationFrame(step);
       }
     }
-
-    requestAnimationFrame(step);
+    animFrame = requestAnimationFrame(step);
   }
 }
 
+// Rendre Amp et MediaPlayer draggables aussi (sans index = pas de mémo)
 makeDraggable(document.getElementById('deco-amp'));
 makeDraggable(document.getElementById('media-player'));
 </script>
