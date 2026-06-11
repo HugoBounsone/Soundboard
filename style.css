@@ -6,13 +6,26 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f9f9fa;
+  background: #000;
   color: #1a1a1a;
 }
 
 body.is-home {
   overflow: hidden;
   height: 100dvh;
+}
+
+/* ===================== */
+/* VIDEO BACKGROUND FIX */
+/* ===================== */
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
 }
 
 /* pages */
@@ -22,6 +35,7 @@ body.is-home {
   margin: 0 auto;
   min-height: 100vh;
   padding: 1rem;
+  position: relative;
 }
 
 .page.active {
@@ -33,15 +47,8 @@ body.is-home {
   width: 100%;
   height: 100dvh;
   padding: 0;
-  position: relative;
   overflow: hidden;
-}
-
-.bg-video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  position: relative;
 }
 
 .deco-amp,
@@ -84,7 +91,7 @@ body.is-home {
 }
 
 /* ========================= */
-/* PERSONNAGES (CLEAN MODE) */
+/* PERSONNAGES ULTRA CLEAN */
 /* ========================= */
 
 .sb-header {
@@ -93,49 +100,33 @@ body.is-home {
   margin-bottom: 1rem;
 }
 
-/* bouton home image */
 .home-btn {
   width: 48px;
   height: 48px;
   cursor: pointer;
-  user-select: none;
-  -webkit-user-drag: none;
-  transition: transform 0.15s ease;
 }
 
-.home-btn:active {
-  transform: scale(0.9);
-}
-
-/* grille personnages */
+/* GRID FREE STYLE */
 .persons-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-items: center;
-  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 70vh;
 }
 
-/* carte personnage (ULTRA CLEAN) */
+/* CARDS FLOATING */
 .person-card {
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  cursor: grab;
+  transition: transform 0.2s ease;
 }
 
 .person-card:active {
   transform: scale(0.92);
 }
 
-/* image personnage */
+/* IMAGES BIG & CLEAN */
 .person-img {
-  width: 100%;
-  max-width: 160px;
+  width: 180px;
   height: auto;
   object-fit: contain;
   user-select: none;
@@ -144,23 +135,11 @@ body.is-home {
 }
 
 /* ========================= */
-/* SOUNDBOARD (inchangé) */
+/* SOUNDBOARD (minimal) */
 /* ========================= */
 
 .sounds-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-}
-
-.sound-card {
-  border: 1px solid #e5e5e5;
-  border-radius: 14px;
-  padding: 10px;
-  text-align: center;
-}
-
-.sound-card.playing {
-  border-color: #ff3fd4;
-  background: #fff0fc;
 }
