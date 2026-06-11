@@ -346,7 +346,7 @@ function drawBlobLinks() {
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       // distance max de connexion
-      const maxDist = 250;
+      const maxDist = 1000;
 
      if (dist < maxDist) {
 
@@ -357,7 +357,7 @@ function drawBlobLinks() {
   ctx.lineTo(b.x, b.y);
 
   ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 1;
 
   ctx.stroke();
 
