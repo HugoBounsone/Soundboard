@@ -147,6 +147,24 @@ setTimeout(() => {
 // ============================
 const pagePersons = document.getElementById('page-persons');
 const cards = [];
+ let canvas;
+let ctx;
+
+function initCanvas() {
+  canvas = document.getElementById("blob-canvas");
+  if (!canvas) return;
+
+  ctx = canvas.getContext("2d");
+
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+}
+
+function resizeCanvas() {
+  if (!canvas) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
 
 persons.forEach((person, i) => {
   const card = document.createElement('div');
@@ -195,6 +213,9 @@ function goPersons() {
   document.getElementById('page-home').classList.remove('active');
   document.getElementById('page-soundboard').classList.remove('active');
   document.getElementById('page-persons').classList.add('active');
+  setTimeout(() => {
+  initCanvas();
+}, 50);
 
   cards.forEach((card, i) => {
     card.style.left = currentPositions[i].x + 'px';
@@ -300,6 +321,9 @@ function makeDraggable(el, index, isPersonCard) {
 makeDraggable(document.getElementById('deco-amp'),     undefined, false);
 makeDraggable(document.getElementById('media-player'), undefined, false);
 </script>
+
+
+  
 
 </body>
 </html>
