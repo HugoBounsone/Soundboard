@@ -46,11 +46,14 @@ body.is-home {
 
 .sys-msg {
   position: absolute;
-  width: 75vw;
-  max-width: 320px;
+  width: 38vw;
+  max-width: 160px;
   user-select: none;
   pointer-events: none;
-  animation: sysFlicker 0.15s steps(1) infinite;
+  opacity: 0;
+  animation:
+    sysAppear 0.15s forwards,
+    sysFlicker 0.18s steps(1) infinite;
 }
 
 @keyframes sysFlicker {
@@ -58,6 +61,14 @@ body.is-home {
   50%       { opacity: 0.85; }
 }
 
+@keyframes sysAppear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* ================================================
    PAGES
    ================================================ */
