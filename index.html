@@ -11,7 +11,8 @@
 
 <!-- 🎬 VIDEO BACKGROUND GLOBAL -->
 <video class="bg-video" autoplay muted loop playsinline>
-  <source src="assets/HelloKitty2.mov">
+  <source src="assets/HelloKitty2.mov" type="video/quicktime">
+  <source src="assets/HelloKitty2.mov" type="video/mp4">
 </video>
 
 <!-- ========== HOME ========== -->
@@ -32,41 +33,65 @@
 <!-- ========== SOUNDBOARD ========== -->
 <div id="page-soundboard" class="page">
   <div class="sb-header">
-    <button class="back-btn" onclick="goPersons()">← Retour</button>
-    <div class="sb-person-info">
-      <div class="sb-avatar" id="sb-avatar"></div>
-      <div>
-        <div class="sb-name" id="sb-name"></div>
-        <div class="sb-count" id="sb-count"></div>
-      </div>
-    </div>
+    <img src="assets/character_button.png" class="home-btn" onclick="goPersons()" />
   </div>
   <div class="sounds-grid" id="sounds-grid"></div>
 </div>
 
 <script>
 const persons = [
-  { id: 1, name: "Personne 1", avatar: "😄", sounds: [] },
-  { id: 2, name: "Personne 2", avatar: "🤪", sounds: [] },
-  { id: 3, name: "Personne 3", avatar: "🎭", sounds: [] },
-  { id: 4, name: "Personne 4", avatar: "🦄", sounds: [] }
+  {
+    id: 1,
+    name: "Personne 1",
+    sounds: [
+      { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p1_son1.mp3" },
+      { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p1_son2.mp3" },
+      { name: "Son 3", image: "assets/Sound3.png", file: "sounds/p1_son3.mp3" },
+      { name: "Son 4", image: "assets/Sound4.png", file: "sounds/p1_son4.mp3" },
+    ]
+  },
+  {
+    id: 2,
+    name: "Personne 2",
+    sounds: [
+      { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p2_son1.mp3" },
+      { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p2_son2.mp3" },
+      { name: "Son 3", image: "assets/Sound3.png", file: "sounds/p2_son3.mp3" },
+      { name: "Son 4", image: "assets/Sound4.png", file: "sounds/p2_son4.mp3" },
+    ]
+  },
+  {
+    id: 3,
+    name: "Personne 3",
+    sounds: [
+      { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p3_son1.mp3" },
+      { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p3_son2.mp3" },
+      { name: "Son 3", image: "assets/Sound3.png", file: "sounds/p3_son3.mp3" },
+      { name: "Son 4", image: "assets/Sound4.png", file: "sounds/p3_son4.mp3" },
+    ]
+  },
+  {
+    id: 4,
+    name: "Personne 4",
+    sounds: [
+      { name: "Son 1", image: "assets/Sound1.png", file: "sounds/p4_son1.mp3" },
+      { name: "Son 2", image: "assets/Sound2.png", file: "sounds/p4_son2.mp3" },
+      { name: "Son 3", image: "assets/Sound3.png", file: "sounds/p4_son3.mp3" },
+      { name: "Son 4", image: "assets/Sound4.png", file: "sounds/p4_son4.mp3" },
+    ]
+  }
 ];
 
-// ============================
-// POSITIONS INITIALES (fixes, mémorisées)
-// ============================
-const initialPositions = [
+// Positions initiales des cartes personnages
+const currentPositions = [
   { x: 40,  y: 40  },
   { x: 190, y: 90  },
   { x: 60,  y: 240 },
   { x: 210, y: 260 }
 ];
 
-// Positions courantes — persistent quand on change de page
-const currentPositions = initialPositions.map(p => ({ ...p }));
-
 // ============================
-// CONSTRUCTION DES CARTES
+// CONSTRUCTION DES CARTES PERSONNAGES
 // ============================
 const personsGrid = document.getElementById('persons-grid');
 const cards = [];
@@ -91,10 +116,18 @@ document.getElementById('enter-btn').addEventListener('click', goPersons);
 function openSoundboard(person) {
   document.getElementById('page-persons').classList.remove('active');
   document.getElementById('page-soundboard').classList.add('active');
-  document.getElementById('sb-avatar').textContent = person.avatar;
-  document.getElementById('sb-name').textContent = person.name;
-  document.getElementById('sb-count').textContent =
-    `${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}`;
+
+  // Construit la grille des sons
+  const soundsGrid = document.getElementById('sounds-grid');
+  soundsGrid.innerHTML = '';
+
+  person.sounds.forEach(sound => {
+    const card = document.createElement('div');
+    card.className = 'sound-card';
+    card.innerHTML = `<img src="${sound.image}" class="sound-img" alt="${sound.name}" />`;
+    card.addEventListener('click', () => playSound(card, sound.file));
+    soundsGrid.appendChild(card);
+  });
 }
 
 function goHome() {
@@ -122,17 +155,46 @@ function goPersons() {
 // ============================
 // AUDIO
 // ============================
-function stopSound() {}
+let currentAudio = null;
+let currentCard  = null;
+
+function playSound(card, file) {
+  stopSound();
+  const audio = new Audio(file);
+  currentAudio = audio;
+  currentCard  = card;
+  card.classList.add('playing');
+  audio.play().catch(() => playPlaceholderBip());
+  audio.addEventListener('ended', () => {
+    card.classList.remove('playing');
+    currentAudio = null;
+    currentCard  = null;
+  });
+}
+
+function stopSound() {
+  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio = null; }
+  if (currentCard)  { currentCard.classList.remove('playing'); currentCard = null; }
+}
+
+function playPlaceholderBip() {
+  const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.frequency.value = 300 + Math.random() * 400;
+  osc.type = ['sine','square','sawtooth','triangle'][Math.floor(Math.random() * 4)];
+  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+  osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+}
 
 // ============================
-// DRAG + PHYSICS + LIMITES
+// DRAG SIMPLE
 // ============================
 function makeDraggable(el, index) {
   let dragging = false;
   let startX, startY, origX, origY;
-  let velocityX = 0, velocityY = 0;
-  let lastX = 0, lastY = 0, lastTime = 0;
-  let animFrame = null;
 
   function getGridBounds() {
     const grid = document.getElementById('persons-grid');
@@ -148,8 +210,8 @@ function makeDraggable(el, index) {
 
   function applyPos(x, y) {
     const { maxX, maxY } = getGridBounds();
-    const cx = clamp(x, 0, maxX);
-    const cy = clamp(y, 0, maxY);
+    const cx = clamp(x, 0, Math.max(0, maxX));
+    const cy = clamp(y, 0, Math.max(0, maxY));
     el.style.left = cx + 'px';
     el.style.top  = cy + 'px';
     if (index !== undefined) {
@@ -158,99 +220,36 @@ function makeDraggable(el, index) {
     }
   }
 
-  function select() {
-    document.querySelectorAll('.person-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-  }
-
-  // TOUCH
   el.addEventListener('touchstart', e => {
-    if (animFrame) cancelAnimationFrame(animFrame);
     const t = e.touches[0];
     dragging = true;
     startX = t.clientX; startY = t.clientY;
     origX = el.offsetLeft; origY = el.offsetTop;
-    velocityX = 0; velocityY = 0;
-    lastX = origX; lastY = origY;
-    lastTime = performance.now();
-    select();
   }, { passive: true });
 
   el.addEventListener('touchmove', e => {
     if (!dragging) return;
     e.preventDefault();
     const t = e.touches[0];
-    const x = origX + (t.clientX - startX);
-    const y = origY + (t.clientY - startY);
-    const now = performance.now();
-    const dt = now - lastTime || 16;
-    velocityX = (x - lastX) / dt;
-    velocityY = (y - lastY) / dt;
-    lastX = x; lastY = y; lastTime = now;
-    applyPos(x, y);
+    applyPos(origX + (t.clientX - startX), origY + (t.clientY - startY));
   }, { passive: false });
 
-  el.addEventListener('touchend', () => {
-    dragging = false;
-    inertia();
-  });
+  el.addEventListener('touchend', () => { dragging = false; });
 
-  // MOUSE
   el.addEventListener('mousedown', e => {
-    if (animFrame) cancelAnimationFrame(animFrame);
     dragging = true;
     startX = e.clientX; startY = e.clientY;
     origX = el.offsetLeft; origY = el.offsetTop;
-    velocityX = 0; velocityY = 0;
-    lastX = origX; lastY = origY;
-    lastTime = performance.now();
-    select();
   });
 
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-    const x = origX + (e.clientX - startX);
-    const y = origY + (e.clientY - startY);
-    const now = performance.now();
-    const dt = now - lastTime || 16;
-    velocityX = (x - lastX) / dt;
-    velocityY = (y - lastY) / dt;
-    lastX = x; lastY = y; lastTime = now;
-    applyPos(x, y);
+    applyPos(origX + (e.clientX - startX), origY + (e.clientY - startY));
   });
 
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
-    dragging = false;
-    inertia();
-  });
-
-  // INERTIE avec limites
-  function inertia() {
-    let vx = velocityX * 20;
-    let vy = velocityY * 20;
-
-    function step() {
-      vx *= 0.92;
-      vy *= 0.92;
-      const nx = el.offsetLeft + vx;
-      const ny = el.offsetTop  + vy;
-      applyPos(nx, ny);
-
-      // Rebond sur les bords
-      const { maxX, maxY } = getGridBounds();
-      if (el.offsetLeft <= 0 || el.offsetLeft >= maxX) vx *= -0.4;
-      if (el.offsetTop  <= 0 || el.offsetTop  >= maxY) vy *= -0.4;
-
-      if (Math.abs(vx) > 0.3 || Math.abs(vy) > 0.3) {
-        animFrame = requestAnimationFrame(step);
-      }
-    }
-    animFrame = requestAnimationFrame(step);
-  }
+  document.addEventListener('mouseup', () => { dragging = false; });
 }
 
-// Rendre Amp et MediaPlayer draggables aussi (sans index = pas de mémo)
 makeDraggable(document.getElementById('deco-amp'));
 makeDraggable(document.getElementById('media-player'));
 </script>
