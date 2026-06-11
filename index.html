@@ -9,28 +9,23 @@
 
 <body class="is-home">
 
-<!-- 🎬 VIDEO BACKGROUND GLOBAL -->
-<video class="bg-video" autoplay muted loop playsinline preload="auto">
+<video class="bg-video" autoplay muted loop playsinline preload="auto" id="bg-video">
   <source src="assets/HelloKitty2.mp4" type="video/mp4">
 </video>
 
-<!-- 💥 SYSTEM MESSAGE OVERLAY -->
 <div id="system-overlay"></div>
 
-<!-- ========== HOME ========== -->
 <div id="page-home" class="page active">
   <img src="assets/MediaPlayer.png" class="media-player" id="media-player" />
   <img src="assets/Amp.png" class="deco-amp" id="deco-amp" />
   <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" />
 </div>
 
-<!-- ========== PERSONNAGES ========== -->
 <div id="page-persons" class="page">
   <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
   <canvas id="blob-canvas"></canvas>
 </div>
 
-<!-- ========== SOUNDBOARD ========== -->
 <div id="page-soundboard" class="page">
   <div class="sb-header">
     <img src="assets/character_button.png" class="home-btn" onclick="goPersons()" />
@@ -86,6 +81,28 @@ const currentPositions = [
 ];
 
 // ============================
+// GESTION DU BACKGROUND VIDEO (ANTI ÉCONOMIE D'ÉNERGIE)
+// ============================
+const bgVideo = document.getElementById('bg-video');
+
+// Tentative de lecture automatique normale au chargement
+window.addEventListener('DOMContentLoaded', () => {
+  if (bgVideo) {
+    bgVideo.play().catch(() => {
+      console.log("Autoplay bloqué par le navigateur (sûrement l'économie d'énergie). Attente du clic utilisateur.");
+    });
+  }
+});
+
+// Force la lecture dès le tout premier clic/toucher n'importe où sur l'écran
+window.addEventListener('click', () => {
+  if (bgVideo && bgVideo.paused) {
+    bgVideo.play().catch(err => console.log("Erreur lecture vidéo:", err));
+  }
+}, { once: true });
+
+
+// ============================
 // SYSTEM MESSAGE EFFECT
 // ============================
 const overlay = document.getElementById('system-overlay');
@@ -95,30 +112,24 @@ function showSystemMessage() {
   overlay.innerHTML = '';
 
   const count = 3 + Math.floor(Math.random() * 8);
-
- const baseAngle = 0;
+  const baseAngle = 0;
 
   for (let i = 0; i < count; i++) {
-
     const img = document.createElement('img');
     img.src = 'assets/system_message.png';
     img.className = 'sys-msg';
 
     const spacing = 25;
-
     const offsetX = (i - count / 2) * spacing;
     const offsetY = (i - count / 2) * spacing;
 
-    img.style.transform =
-      `translate(${offsetX}px, ${offsetY}px) rotate(${baseAngle}deg)`;
-
+    img.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${baseAngle}deg)`;
     img.style.animationDelay = (i * 35) + 'ms';
 
     overlay.appendChild(img);
   }
 
   overlay.classList.add('visible');
-
   const duration = 4500 + Math.random() * 2000;
 
   sysTimeout = setTimeout(() => {
@@ -127,7 +138,6 @@ function showSystemMessage() {
 }
 
 function scheduleNext() {
-  // Réapparaît toutes les 8 à 20 secondes
   const delay = 2500 + Math.random() * 4000;
   setTimeout(() => {
     showSystemMessage();
@@ -135,7 +145,6 @@ function scheduleNext() {
   }, delay);
 }
 
-// Démarre après 3 secondes
 setTimeout(() => {
   showSystemMessage();
   scheduleNext();
@@ -146,7 +155,7 @@ setTimeout(() => {
 // ============================
 const pagePersons = document.getElementById('page-persons');
 const cards = [];
- let canvas;
+let canvas;
 let ctx;
 
 function initCanvas() {
@@ -154,7 +163,6 @@ function initCanvas() {
   if (!canvas) return;
 
   ctx = canvas.getContext("2d");
-
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
 }
@@ -181,7 +189,13 @@ persons.forEach((person, i) => {
 // ============================
 // NAVIGATION
 // ============================
-document.getElementById('enter-btn').addEventListener('click', goPersons);
+document.getElementById('enter-btn').addEventListener('click', () => {
+  // Sécurité supplémentaire : force le play lors du clic sur ENTER
+  if (bgVideo && bgVideo.paused) {
+    bgVideo.play().catch(err => console.log(err));
+  }
+  goPersons();
+});
 
 function openSoundboard(person) {
   document.getElementById('page-persons').classList.remove('active');
@@ -213,9 +227,9 @@ function goPersons() {
   document.getElementById('page-soundboard').classList.remove('active');
   document.getElementById('page-persons').classList.add('active');
   setTimeout(() => {
-  initCanvas();
+    initCanvas();
     drawBlobLinks();
-}, 50);
+  }, 50);
 
   cards.forEach((card, i) => {
     card.style.left = currentPositions[i].x + 'px';
@@ -336,43 +350,28 @@ function drawBlobLinks() {
 
   for (let i = 0; i < positions.length; i++) {
     for (let j = i + 1; j < positions.length; j++) {
-
       const a = positions[i];
       const b = positions[j];
 
       const dx = a.x - b.x;
       const dy = a.y - b.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-
-      // distance max de connexion
       const maxDist = 300;
 
-     if (dist < maxDist) {
-
-  ctx.globalAlpha = 1;
-
-  ctx.beginPath();
-  ctx.moveTo(a.x, a.y);
-  ctx.lineTo(b.x, b.y);
-
-  ctx.strokeStyle = "#ffffff";
-  ctx.lineWidth = 1;
-
-  ctx.stroke();
-
+      if (dist < maxDist) {
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1;
+        ctx.stroke();
       }
     }
   }
-
   requestAnimationFrame(drawBlobLinks);
 }
-
-
-  
 </script>
-
-
-  
 
 </body>
 </html>
