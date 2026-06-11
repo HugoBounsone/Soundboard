@@ -24,10 +24,8 @@
 
 <!-- ========== PERSONNAGES ========== -->
 <div id="page-persons" class="page">
-  <div class="sb-header">
-    <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
-  </div>
-  <div class="persons-grid" id="persons-grid"></div>
+  <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
+  <!-- Les cartes sont injectées directement ici par le JS -->
 </div>
 
 <!-- ========== SOUNDBOARD ========== -->
@@ -79,16 +77,16 @@ const persons = [
 ];
 
 const currentPositions = [
-  { x: 40,  y: 40  },
-  { x: 190, y: 90  },
-  { x: 60,  y: 240 },
-  { x: 210, y: 260 }
+  { x: 40,  y: 100 },
+  { x: 190, y: 150 },
+  { x: 60,  y: 300 },
+  { x: 210, y: 350 }
 ];
 
 // ============================
-// CONSTRUCTION DES CARTES PERSONNAGES
+// CONSTRUCTION DES CARTES — dans #page-persons directement
 // ============================
-const personsGrid = document.getElementById('persons-grid');
+const pagePersons = document.getElementById('page-persons');
 const cards = [];
 
 persons.forEach((person, i) => {
@@ -96,12 +94,11 @@ persons.forEach((person, i) => {
   card.className = 'person-card';
   card.style.left = currentPositions[i].x + 'px';
   card.style.top  = currentPositions[i].y + 'px';
-  // Animation float avec délai différent par carte
   card.style.animationDelay = (i * 0.8) + 's';
   card.innerHTML = `<img src="assets/Character${person.id}.png" class="person-img" />`;
   card.addEventListener('click', () => openSoundboard(person));
   makeDraggable(card, i, true);
-  personsGrid.appendChild(card);
+  pagePersons.appendChild(card);
   cards.push(card);
 });
 
@@ -116,7 +113,6 @@ function openSoundboard(person) {
 
   const soundsGrid = document.getElementById('sounds-grid');
   soundsGrid.innerHTML = '';
-
   person.sounds.forEach(sound => {
     const card = document.createElement('div');
     card.className = 'sound-card';
@@ -185,54 +181,40 @@ function playPlaceholderBip() {
 }
 
 // ============================
-// DRAG SIMPLE — corrigé pour la home
+// DRAG
 // ============================
 function makeDraggable(el, index, isPersonCard) {
   let dragging = false;
   let startX, startY, origX, origY;
 
-  // Limite : moitié de l'élément peut sortir de l'écran
   function applyPos(x, y) {
     const halfW = el.offsetWidth  / 2;
     const halfH = el.offsetHeight / 2;
-
-    let minX, maxX, minY, maxY;
+    let cx, cy;
 
     if (isPersonCard) {
-      // Cartes personnages : peuvent sortir de moitié
-      const grid = document.getElementById('persons-grid');
-      minX = -halfW;
-      maxX = grid.offsetWidth  - halfW;
-      minY = -halfH;
-      maxY = grid.offsetHeight - halfH;
+      // Limites = bords de l'écran, peut sortir de moitié
+      cx = Math.max(-halfW, Math.min(window.innerWidth  - halfW, x));
+      cy = Math.max(-halfH, Math.min(window.innerHeight - halfH, y));
     } else {
-      // Éléments home : limités à la page entière
-      minX = 0;
-      maxX = window.innerWidth  - el.offsetWidth;
-      minY = 0;
-      maxY = window.innerHeight - el.offsetHeight;
+      cx = Math.max(0, Math.min(window.innerWidth  - el.offsetWidth,  x));
+      cy = Math.max(0, Math.min(window.innerHeight - el.offsetHeight, y));
     }
 
-    const cx = Math.max(minX, Math.min(maxX, x));
-    const cy = Math.max(minY, Math.min(maxY, y));
     el.style.left = cx + 'px';
     el.style.top  = cy + 'px';
-
     if (index !== undefined) {
       currentPositions[index].x = cx;
       currentPositions[index].y = cy;
     }
   }
 
-  // TOUCH
   el.addEventListener('touchstart', e => {
     e.stopPropagation();
     const t = e.touches[0];
     dragging = true;
-    startX = t.clientX;
-    startY = t.clientY;
-    origX  = el.offsetLeft;
-    origY  = el.offsetTop;
+    startX = t.clientX; startY = t.clientY;
+    origX  = el.offsetLeft; origY = el.offsetTop;
   }, { passive: true });
 
   el.addEventListener('touchmove', e => {
@@ -244,14 +226,11 @@ function makeDraggable(el, index, isPersonCard) {
 
   el.addEventListener('touchend', () => { dragging = false; });
 
-  // MOUSE
   el.addEventListener('mousedown', e => {
     e.stopPropagation();
     dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    origX  = el.offsetLeft;
-    origY  = el.offsetTop;
+    startX = e.clientX; startY = e.clientY;
+    origX  = el.offsetLeft; origY = el.offsetTop;
   });
 
   document.addEventListener('mousemove', e => {
@@ -262,7 +241,6 @@ function makeDraggable(el, index, isPersonCard) {
   document.addEventListener('mouseup', () => { dragging = false; });
 }
 
-// Home : drag de Amp et MediaPlayer
 makeDraggable(document.getElementById('deco-amp'),     undefined, false);
 makeDraggable(document.getElementById('media-player'), undefined, false);
 </script>
