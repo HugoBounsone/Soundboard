@@ -5,54 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mes bruits bizarres</title>
   <link rel="stylesheet" href="style.css" />
-
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Bruits" />
 </head>
 
 <body class="is-home">
 
-  <!-- 🎬 VIDEO GLOBAL BACKGROUND (FIX IMPORTANT) -->
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="assets/HelloKitty2.mov">
-  </video>
+<!-- 🎬 VIDEO BACKGROUND GLOBAL -->
+<video class="bg-video" autoplay muted loop playsinline>
+  <source src="assets/HelloKitty2.mov">
+</video>
 
-  <!-- ========== PAGE ACCUEIL ========== -->
-  <div id="page-home" class="page active">
+<!-- ========== HOME ========== -->
+<div id="page-home" class="page active">
 
-    <img src="assets/MediaPlayer.png" class="media-player" id="media-player" alt="" />
-    <img src="assets/Amp.png" class="deco-amp" id="deco-amp" alt="" />
-    <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" alt="Enter" />
+  <img src="assets/MediaPlayer.png" class="media-player" id="media-player" />
+  <img src="assets/Amp.png" class="deco-amp" id="deco-amp" />
+  <img src="assets/enter_button.png" class="enter-btn" id="enter-btn" />
+</div>
+
+<!-- ========== PERSONNAGES ========== -->
+<div id="page-persons" class="page">
+
+  <div class="sb-header">
+    <img src="assets/home_button.png" class="home-btn" onclick="goHome()" />
   </div>
 
-  <!-- ========== PAGE PERSONNAGES ========== -->
-  <div id="page-persons" class="page">
+  <div class="persons-grid" id="persons-grid"></div>
+</div>
 
-    <div class="sb-header">
-      <img src="assets/home_button.png" class="home-btn" onclick="goHome()" alt="Home" />
-    </div>
+<!-- ========== SOUNDBOARD ========== -->
+<div id="page-soundboard" class="page">
 
-    <div class="persons-grid" id="persons-grid"></div>
-  </div>
+  <div class="sb-header">
+    <button class="back-btn" onclick="goPersons()">← Retour</button>
 
-  <!-- ========== PAGE SOUNDBOARD ========== -->
-  <div id="page-soundboard" class="page">
-
-    <div class="sb-header">
-      <button class="back-btn" onclick="goPersons()">← Retour</button>
-
-      <div class="sb-person-info">
-        <div class="sb-avatar" id="sb-avatar"></div>
-        <div>
-          <div class="sb-name" id="sb-name"></div>
-          <div class="sb-count" id="sb-count"></div>
-        </div>
+    <div class="sb-person-info">
+      <div class="sb-avatar" id="sb-avatar"></div>
+      <div>
+        <div class="sb-name" id="sb-name"></div>
+        <div class="sb-count" id="sb-count"></div>
       </div>
     </div>
-
-    <div class="sounds-grid" id="sounds-grid"></div>
   </div>
+
+  <div class="sounds-grid" id="sounds-grid"></div>
+</div>
 
 <script>
 const persons = [
@@ -63,15 +59,15 @@ const persons = [
 ];
 
 // ============================
-// PERSONNAGES (CLEAN + DRAG)
+// PERSONNAGES + PHYSIQUE
 // ============================
 const personsGrid = document.getElementById('persons-grid');
 
 const positions = [
   { x: 40, y: 40 },
-  { x: 180, y: 80 },
-  { x: 60, y: 220 },
-  { x: 200, y: 240 }
+  { x: 190, y: 90 },
+  { x: 60, y: 240 },
+  { x: 210, y: 260 }
 ];
 
 persons.forEach((person, i) => {
@@ -104,9 +100,6 @@ function openSoundboard(person) {
   document.getElementById('sb-name').textContent = person.name;
   document.getElementById('sb-count').textContent =
     `${person.sounds.length} son${person.sounds.length > 1 ? 's' : ''}`;
-
-  const grid = document.getElementById('sounds-grid');
-  grid.innerHTML = '';
 }
 
 function goHome() {
@@ -126,51 +119,128 @@ function goPersons() {
 }
 
 // ============================
-// AUDIO (placeholder safe)
+// AUDIO
 // ============================
 function stopSound() {}
 
 // ============================
-// DRAG SYSTEM (WORK MOBILE + DESKTOP)
+// DRAG + PHYSICS + GLOW
 // ============================
 function makeDraggable(el) {
   let dragging = false;
-  let startX, startY, origX, origY;
 
+  let startX, startY, origX, origY;
+  let velocityX = 0;
+  let velocityY = 0;
+  let lastX = 0;
+  let lastY = 0;
+  let lastTime = 0;
+
+  function select() {
+    document.querySelectorAll('.person-card')
+      .forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // TOUCH
   el.addEventListener('touchstart', e => {
     const t = e.touches[0];
     dragging = true;
+
     startX = t.clientX;
     startY = t.clientY;
+
     origX = el.offsetLeft;
     origY = el.offsetTop;
+
+    select();
   }, { passive: true });
 
   el.addEventListener('touchmove', e => {
     if (!dragging) return;
-    e.preventDefault();
+
     const t = e.touches[0];
-    el.style.left = (origX + t.clientX - startX) + 'px';
-    el.style.top = (origY + t.clientY - startY) + 'px';
+
+    const x = origX + (t.clientX - startX);
+    const y = origY + (t.clientY - startY);
+
+    const now = performance.now();
+    const dt = now - lastTime || 16;
+
+    velocityX = (x - lastX) / dt;
+    velocityY = (y - lastY) / dt;
+
+    lastX = x;
+    lastY = y;
+    lastTime = now;
+
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+
   }, { passive: false });
 
-  el.addEventListener('touchend', () => dragging = false);
+  el.addEventListener('touchend', () => {
+    dragging = false;
+    inertia();
+  });
 
+  // MOUSE
   el.addEventListener('mousedown', e => {
     dragging = true;
+
     startX = e.clientX;
     startY = e.clientY;
+
     origX = el.offsetLeft;
     origY = el.offsetTop;
+
+    select();
   });
 
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
-    el.style.left = (origX + e.clientX - startX) + 'px';
-    el.style.top = (origY + e.clientY - startY) + 'px';
+
+    const x = origX + (e.clientX - startX);
+    const y = origY + (e.clientY - startY);
+
+    const now = performance.now();
+    const dt = now - lastTime || 16;
+
+    velocityX = (x - lastX) / dt;
+    velocityY = (y - lastY) / dt;
+
+    lastX = x;
+    lastY = y;
+    lastTime = now;
+
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
   });
 
-  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('mouseup', () => {
+    dragging = false;
+    inertia();
+  });
+
+  // 🧲 PHYSICS INERTIA
+  function inertia() {
+    let vx = velocityX * 20;
+    let vy = velocityY * 20;
+
+    function step() {
+      vx *= 0.92;
+      vy *= 0.92;
+
+      el.style.left = el.offsetLeft + vx + 'px';
+      el.style.top = el.offsetTop + vy + 'px';
+
+      if (Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
 }
 
 makeDraggable(document.getElementById('deco-amp'));
