@@ -25,11 +25,46 @@ body.is-home {
 }
 
 /* ================================================
+   💥 SYSTEM MESSAGE OVERLAY
+   Entre la vidéo (z-index: -1) et les pages (z-index: 1+)
+   ================================================ */
+#system-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none; /* pas cliquable */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+#system-overlay.visible {
+  opacity: 1;
+}
+
+.sys-msg {
+  position: absolute;
+  width: 75vw;
+  max-width: 320px;
+  user-select: none;
+  pointer-events: none;
+  animation: sysFlicker 0.15s steps(1) infinite;
+}
+
+@keyframes sysFlicker {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.85; }
+}
+
+/* ================================================
    PAGES
    ================================================ */
 .page {
   display: none;
   position: relative;
+  z-index: 1;
 }
 
 .page.active {
@@ -89,7 +124,6 @@ body.is-home {
 
 /* ================================================
    PAGE PERSONNAGES
-   — plein écran, pas de conteneur intermédiaire
    ================================================ */
 #page-persons {
   width: 100%;
@@ -108,7 +142,6 @@ body.is-home {
   z-index: 20;
 }
 
-/* CARTES directement dans #page-persons */
 .person-card {
   position: absolute;
   cursor: grab;
