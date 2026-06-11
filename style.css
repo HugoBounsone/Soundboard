@@ -7,7 +7,6 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #000;
-  color: #1a1a1a;
 }
 
 body.is-home {
@@ -15,13 +14,10 @@ body.is-home {
   height: 100dvh;
 }
 
-/* ===================== */
-/* VIDEO BACKGROUND FIX */
-/* ===================== */
+/* 🎬 VIDEO GLOBAL */
 .bg-video {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -32,7 +28,7 @@ body.is-home {
 .page {
   display: none;
   max-width: 480px;
-  margin: 0 auto;
+  margin: auto;
   min-height: 100vh;
   padding: 1rem;
   position: relative;
@@ -44,10 +40,7 @@ body.is-home {
 
 /* HOME */
 #page-home {
-  width: 100%;
   height: 100dvh;
-  padding: 0;
-  overflow: hidden;
   position: relative;
 }
 
@@ -56,7 +49,6 @@ body.is-home {
   position: absolute;
   cursor: grab;
   user-select: none;
-  -webkit-user-drag: none;
   touch-action: none;
 }
 
@@ -64,14 +56,12 @@ body.is-home {
   top: 10%;
   left: 10%;
   width: 60%;
-  max-width: 300px;
 }
 
 .media-player {
   top: 60%;
   left: 15%;
   width: 45%;
-  max-width: 250px;
   animation: float 4s ease-in-out infinite;
 }
 
@@ -86,13 +76,11 @@ body.is-home {
   left: 50%;
   transform: translate(-50%,-50%);
   width: 30%;
-  max-width: 140px;
-  cursor: pointer;
 }
 
-/* ========================= */
-/* PERSONNAGES ULTRA CLEAN */
-/* ========================= */
+/* ===================== */
+/* PERSONNAGES */
+/* ===================== */
 
 .sb-header {
   display: flex;
@@ -101,43 +89,43 @@ body.is-home {
 }
 
 .home-btn {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  margin-top: 8px;
   cursor: pointer;
 }
 
-/* GRID FREE STYLE */
+/* GRID FREE */
 .persons-grid {
   position: relative;
-  width: 100%;
   height: 70vh;
 }
 
-/* CARDS FLOATING */
+/* FLOAT + DRAG */
 .person-card {
   position: absolute;
   cursor: grab;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease, filter 0.25s ease;
+  will-change: transform;
 }
 
 .person-card:active {
   transform: scale(0.92);
 }
 
-/* IMAGES BIG & CLEAN */
+/* ✨ GLOW SELECTED */
+.person-card.active {
+  filter: drop-shadow(0 0 20px rgba(255, 63, 212, 0.9));
+  transform: scale(1.1);
+  z-index: 10;
+}
+
 .person-img {
   width: 180px;
-  height: auto;
-  object-fit: contain;
   user-select: none;
-  -webkit-user-drag: none;
   pointer-events: none;
 }
 
-/* ========================= */
-/* SOUNDBOARD (minimal) */
-/* ========================= */
-
+/* SOUND */
 .sounds-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
