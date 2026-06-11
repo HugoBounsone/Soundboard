@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mes bruits bizarres</title>
+  <title>Soundboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -94,31 +94,33 @@ let sysTimeout = null;
 function showSystemMessage() {
   overlay.innerHTML = '';
 
-  // Entre 3 et 6 copies de l'image en diagonale
   const count = 3 + Math.floor(Math.random() * 4);
-  const baseAngle = -15 + Math.random() * 30; // angle diagonal aléatoire
+
+  const baseAngle = -15 + Math.random() * 30;
 
   for (let i = 0; i < count; i++) {
+
     const img = document.createElement('img');
     img.src = 'assets/system_message.png';
     img.className = 'sys-msg';
 
-    // Décalage en diagonale : chaque copie est un peu plus bas/droite
-    const offsetX = i * 60 - (count * 30);
-    const offsetY = i * 50 - (count * 25);
-    const angle   = baseAngle + (Math.random() * 6 - 3);
-    const delay   = i * 60;
+    const spacing = 70;
 
-    img.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(${angle}deg)`;
-    img.style.animationDelay = delay + 'ms';
+    const offsetX = (i - count / 2) * spacing;
+    const offsetY = (i - count / 2) * spacing;
+
+    img.style.transform =
+      `translate(${offsetX}px, ${offsetY}px) rotate(${baseAngle}deg)`;
+
+    img.style.animationDelay = (i * 120) + 'ms';
 
     overlay.appendChild(img);
   }
 
   overlay.classList.add('visible');
 
-  // Disparaît après 1.5 à 3 secondes
-  const duration = 1500 + Math.random() * 1500;
+  const duration = 4500 + Math.random() * 2000;
+
   sysTimeout = setTimeout(() => {
     overlay.classList.remove('visible');
   }, duration);
