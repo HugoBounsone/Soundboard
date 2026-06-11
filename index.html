@@ -215,6 +215,7 @@ function goPersons() {
   document.getElementById('page-persons').classList.add('active');
   setTimeout(() => {
   initCanvas();
+    drawBlobLinks();
 }, 50);
 
   cards.forEach((card, i) => {
@@ -320,6 +321,52 @@ function makeDraggable(el, index, isPersonCard) {
 
 makeDraggable(document.getElementById('deco-amp'),     undefined, false);
 makeDraggable(document.getElementById('media-player'), undefined, false);
+
+function drawBlobLinks() {
+  if (!ctx || !canvas) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const positions = cards.map(card => {
+    const rect = card.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+  });
+
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i + 1; j < positions.length; j++) {
+
+      const a = positions[i];
+      const b = positions[j];
+
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // distance max de connexion
+      const maxDist = 250;
+
+      if (dist < maxDist) {
+
+        const alpha = 1 - dist / maxDist;
+
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+
+        ctx.strokeStyle = `rgba(255, 63, 212, ${alpha})`;
+        ctx.lineWidth = 1 + alpha * 2;
+
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(drawBlobLinks);
+}
+  
 </script>
 
 
