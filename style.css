@@ -47,6 +47,8 @@ body.is-home {
   height: 100dvh;
   overflow: hidden;
   position: relative;
+  padding: 0;
+  max-width: 100%;
 }
 
 .deco-amp,
@@ -56,6 +58,11 @@ body.is-home {
   user-select: none;
   touch-action: none;
   -webkit-user-drag: none;
+}
+
+.deco-amp:active,
+.media-player:active {
+  cursor: grabbing;
 }
 
 .deco-amp {
@@ -87,12 +94,13 @@ body.is-home {
 }
 
 /* ================================================
-   PAGE PERSONNAGES — pas de scroll, pas de débordement
+   PAGE PERSONNAGES
    ================================================ */
 #page-persons {
   overflow: hidden;
   height: 100dvh;
-  touch-action: none; /* bloque le scroll Safari sur cette page */
+  touch-action: none;
+  padding: 1rem;
 }
 
 .sb-header {
@@ -103,7 +111,6 @@ body.is-home {
 
 .home-btn {
   width: 52px;
-  margin-top: 8px;
   cursor: pointer;
 }
 
@@ -121,7 +128,7 @@ body.is-home {
 /* GRILLE LIBRE */
 .persons-grid {
   position: relative;
-  height: calc(100dvh - 80px); /* hauteur dispo sous le header */
+  height: calc(100dvh - 80px);
   overflow: hidden;
 }
 
@@ -130,18 +137,16 @@ body.is-home {
   position: absolute;
   cursor: grab;
   touch-action: none;
-  transition: filter 0.25s ease;
+  -webkit-user-drag: none;
   will-change: transform;
 }
 
 .person-card:active {
-  transform: scale(0.92);
+  cursor: grabbing;
 }
 
-/* ✨ GLOW SELECTED */
 .person-card.active {
   filter: drop-shadow(0 0 20px rgba(255, 63, 212, 0.9));
-  transform: scale(1.1);
   z-index: 10;
 }
 
@@ -155,92 +160,53 @@ body.is-home {
 /* ================================================
    PAGE SOUNDBOARD
    ================================================ */
-.sb-person-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+#page-soundboard {
+  padding: 1rem;
+  min-height: 100dvh;
 }
 
-.sb-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #f0f0f0;
-  border: 1px solid #e5e5e5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.sb-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.sb-count {
-  font-size: 12px;
-  color: #aaa;
-  margin-top: 2px;
-}
-
+/* Grille en 1 colonne centrée */
 .sounds-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.sound-card {
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 14px;
-  padding: 0.9rem 0.7rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  gap: 16px;
+  padding-top: 0.5rem;
 }
 
-.sound-card:active { transform: scale(0.95); }
+.sound-card {
+  width: 100%;
+  max-width: 340px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.sound-card:active {
+  transform: scale(0.97);
+}
 
 .sound-card.playing {
-  border-color: #FF3FD4;
-  background: #fff0fc;
+  filter: drop-shadow(0 0 16px rgba(255, 63, 212, 0.8));
 }
 
 .sound-img {
-  width: 68px;
-  height: 68px;
-  border-radius: 12px;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  border: 1px solid #ebebeb;
-  overflow: hidden;
-}
-
-.sound-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a1a;
-  text-align: center;
-  line-height: 1.3;
-}
-
-.sound-duration {
-  font-size: 11px;
-  color: #aaa;
+  width: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 /* ================================================
    RESPONSIVE
    ================================================ */
 @media (min-width: 480px) {
-  .sounds-grid { grid-template-columns: repeat(3, 1fr); }
+  .sounds-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .sound-card {
+    width: 45%;
+  }
 }
