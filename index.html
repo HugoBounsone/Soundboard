@@ -348,18 +348,19 @@ function drawBlobLinks() {
       // distance max de connexion
       const maxDist = 250;
 
-      if (dist < maxDist) {
+     if (dist < maxDist) {
 
-        const alpha = 1 - dist / maxDist;
+  ctx.globalAlpha = 1;
 
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+  ctx.beginPath();
+  ctx.moveTo(a.x, a.y);
+  ctx.lineTo(b.x, b.y);
 
-        ctx.strokeStyle = `rgba(255, 63, 212, ${alpha})`;
-        ctx.lineWidth = 1 + alpha * 2;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
 
-        ctx.stroke();
+  ctx.stroke();
+
       }
     }
   }
